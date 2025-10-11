@@ -31,7 +31,8 @@ if uploaded_file is not None:
 
     if menu == "Deteksi Objek (YOLO)":
         # Deteksi objek
-        results = yolo_model(img)
+        img_array = np.array(img)
+        results = yolo_model(img_array)
         result_img = results[0].plot()  # hasil deteksi (gambar dengan box)
         st.image(result_img, caption="Hasil Deteksi", use_container_width=True)
 
