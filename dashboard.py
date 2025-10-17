@@ -22,6 +22,15 @@ st.markdown("""
     color: #2d4739;
     font-family: 'Arial', sans-serif;
 }
+.main-title {
+    text-align: center;
+    font-size: 30px;
+    font-weight: bold;
+    color: #2d4739;
+    margin-top: 10px;
+    margin-bottom: 30px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
 .section-box {
     background: linear-gradient(145deg, #7ba883, #547a64);
     border-radius: 20px;
@@ -29,6 +38,7 @@ st.markdown("""
     padding: 25px;
     color: #d6edc7;
     box-shadow: 4px 4px 8px rgba(0,0,0,0.25);
+    height: 100%;
 }
 .section-title {
     font-size: 22px;
@@ -68,7 +78,10 @@ div[data-testid="stFileUploader"] {
 </style>
 """, unsafe_allow_html=True)
 
-# ====== Layout ======
+# ====== Judul Utama (tanpa kotak hijau) ======
+st.markdown('<div class="main-title">🧠 DETEKSI & KLASIFIKASI GAMBAR</div>', unsafe_allow_html=True)
+
+# ====== Layout 2 Kolom ======
 col1, col2 = st.columns([1, 2])
 
 # ---- Kolom Kiri: Pilih Mode ----
