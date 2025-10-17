@@ -4,7 +4,7 @@ import tensorflow as tf
 from tensorflow.keras.preprocessing import image
 import numpy as np
 from PIL import Image
-import cv2
+import cv2  # import OpenCV
 
 # ====== Konfigurasi halaman agar lebar penuh ======
 st.set_page_config(layout="wide")
@@ -111,31 +111,14 @@ if uploaded_file is not None:
         results = yolo_model(img_array)
         img_with_boxes = img_array.copy()
 
+        # Loop untuk gambar bounding box dan label confidence
         for box in results[0].boxes:
             xmin, ymin, xmax, ymax = map(int, box.xyxy[0])
             confidence = box.conf[0]
             label = int(box.cls[0])
+            
             cv2.rectangle(img_with_boxes, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2)
             cv2.putText(img_with_boxes, f"{label} {confidence:.2f}", (xmin, ymin - 10),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
 
-        st.image(img_with_boxes, caption="📦 Gambar dengan Bounding Box Deteksi", use_container_width=True)
-        st.markdown('<div class="detect-result">✅ Deteksi objek berhasil dilakukan.</div>', unsafe_allow_html=True)
-
-    elif page == "Klasifikasi Gambar":
-        st.markdown('<div class="section-title">📊 Hasil Klasifikasi Gambar</div>', unsafe_allow_html=True)
-        img_resized = img.resize((224, 224))
-        img_array_cls = image.img_to_array(img_resized)
-        img_array_cls = np.expand_dims(img_array_cls, axis=0)
-        img_array_cls = img_array_cls / 255.0
-
-        prediction = classifier.predict(img_array_cls)
-        class_index = np.argmax(prediction)
-        accuracy = float(np.max(prediction)) * 100
-
-        st.markdown(
-            f'<div class="detect-result">📊 <b>Hasil Prediksi:</b> {class_index}<br>🎯 <b>Akurasi:</b> {accuracy:.2f}%</div>',
-            unsafe_allow_html=True
-        )
-else:
-    st.info("Silakan unggah gambar terlebih dahulu.")
+        st.image(img_with_boxes, capt
