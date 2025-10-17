@@ -4,7 +4,6 @@ import tensorflow as tf
 from tensorflow.keras.preprocessing import image
 import numpy as np
 from PIL import Image
-import cv2
 
 # ==========================
 # LOAD MODEL
@@ -28,7 +27,7 @@ custom_style = """
     font-family: 'Arial', sans-serif;
 }
 
-/* Kotak Judul */
+/* JUDUL */
 .title-box {
     background: linear-gradient(145deg, #7ba883, #547a64);
     padding: 15px;
@@ -42,7 +41,7 @@ custom_style = """
     margin-bottom: 30px;
 }
 
-/* Layout utama */
+/* LAYOUT */
 .main-container {
     display: flex;
     flex-direction: row;
@@ -55,24 +54,25 @@ custom_style = """
 .left-box {
     width: 30%;
     background: linear-gradient(145deg, #7ba883, #547a64);
-    padding: 20px;
+    padding: 25px;
     border-radius: 15px;
     border: 2px solid #c9e7c0;
     color: #d6edc7;
     box-shadow: 3px 3px 6px rgba(0,0,0,0.25);
 }
 
-/* supaya uploader streamlit di dalam kotak */
+/* Upload box di dalam kotak hijau */
 div[data-testid="stFileUploader"] {
-    background-color: rgba(255,255,255,0.1);
+    background: #7ba883;
     border: 2px dashed #c9e7c0;
     border-radius: 10px;
-    padding: 10px;
-    color: #d6edc7 !important;
+    padding: 20px;
+    text-align: center;
+    color: #f0f8ec !important;
 }
 
 div[data-testid="stFileUploader"] section {
-    color: #d6edc7 !important;
+    color: #f0f8ec !important;
 }
 
 /* KANAN */
@@ -82,11 +82,11 @@ div[data-testid="stFileUploader"] section {
     border: 2px solid #c9e7c0;
     border-radius: 15px;
     text-align: center;
-    padding: 15px;
+    padding: 20px;
     box-shadow: 3px 3px 6px rgba(0,0,0,0.25);
 }
 
-/* Label teks di kotak */
+/* Label */
 .box-label {
     font-size: 20px;
     font-weight: bold;
@@ -107,20 +107,20 @@ st.markdown('<div class="title-box">🧠 DETEKSI & KLASIFIKASI GAMBAR</div>', un
 # ==========================
 st.markdown('<div class="main-container">', unsafe_allow_html=True)
 
-# KOTAK KIRI (UPLOAD)
+# KOTAK KIRI
 st.markdown('<div class="left-box">', unsafe_allow_html=True)
 st.markdown('<div class="box-label">UPLOAD GAMBAR</div>', unsafe_allow_html=True)
 
-uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png"])
+uploaded_file = st.file_uploader("Seret atau pilih gambar di sini 👇", type=["jpg", "jpeg", "png"])
 menu = st.radio("Pilih Mode:", ["Deteksi Objek (YOLO)", "Klasifikasi Gambar"], label_visibility="visible")
 
-st.markdown('</div>', unsafe_allow_html=True)  # tutup left box
+st.markdown('</div>', unsafe_allow_html=True)  # tutup left-box
 
-# KOTAK KANAN (GAMBAR)
+# KOTAK KANAN
 st.markdown('<div class="right-box">', unsafe_allow_html=True)
-st.markdown('<div class="box-label">GAMBAR</div>', unsafe_allow_html=True)
 
 if uploaded_file is not None:
+    st.markdown('<div class="box-label">GAMBAR</div>', unsafe_allow_html=True)
     img = Image.open(uploaded_file)
     st.image(img, caption="Gambar yang Diupload", use_container_width=True)
 
