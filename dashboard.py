@@ -95,51 +95,52 @@ div[data-testid="stFileUploader"] {
 # ====== Judul utama ======
 st.markdown('<div class="main-title">🧠 Deteksi dan Klasifikasi Gambar</div>', unsafe_allow_html=True)
 
-# ====== Upload gambar di halaman utama ======
-uploaded_file = st.file_uploader("Seret atau pilih gambar (unggah sekali saja) 👇", type=["jpg", "jpeg", "png"])
+# ====== Sidebar navigation ======
+page = st.sidebar.radio("⚙️ Pilih Mode Analisis", ["Deteksi Objek (YOLO)", "Klasifikasi Gambar"])
 
-if uploaded_file is not None:
-    img = Image.open(uploaded_file)
-    st.image(img, caption="🖼️ Gambar yang Diupload", use_container_width=True)
+# ====== Halaman Deteksi Objek ======
+if page == "Deteksi Objek (YOLO)":
+    st.markdown('<div class="section-title">📤 Upload & Hasil Deteksi</div>', unsafe_allow_html=True)
+    uploaded_file = st.file_uploader("Seret atau pilih gambar untuk deteksi 👇", type=["jpg", "jpeg", "png"])
 
-    # ====== Sidebar navigation ======
-    page = st.sidebar.radio("⚙️ Pilih Mode Analisis", ["Deteksi Objek (YOLO)", "Klasifikasi Gambar"])
+    if uploaded_file is not None:
+        img = Image.open(uploaded_file)
+        st.image(img, caption="🖼️ Gambar yang Diupload", use_container_width=True)
 
-    # Konversi ke array numpy untuk deteksi / klasifikasi
-    img_array = np.array(img)
-
-    # ====== Halaman Deteksi Objek ======
-    if page == "Deteksi Objek (YOLO)":
-        st.markdown('<div class="section-title">📦 Hasil Deteksi Objek</div>', unsafe_allow_html=True)
+        img_array = np.array(img)
         results = yolo_model(img_array)
 
-        # Copy gambar untuk digambar kotak deteksi
+        # Gambar hasil deteksi dengan kotak dan label (pakai cv2)
         img_with_boxes = img_array.copy()
-
-        # Loop tiap bounding box hasil deteksi
         for box in results[0].boxes:
             xmin, ymin, xmax, ymax = map(int, box.xyxy[0])
             confidence = box.conf[0]
             label = int(box.cls[0])
-            # Gambar kotak hijau
             cv2.rectangle(img_with_boxes, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2)
-            # Tulis label & confidence
             cv2.putText(img_with_boxes, f"{label} {confidence:.2f}", (xmin, ymin - 10),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
 
-        st.image(img_with_boxes, caption="📦 Gambar dengan Bounding Box Deteksi", use_container_width=True)
+        st.image(img_with_boxes, caption="📦 Hasil Deteksi", use_container_width=True)
         st.markdown('<div class="detect-result">✅ Deteksi objek berhasil dilakukan.</div>', unsafe_allow_html=True)
 
-    # ====== Halaman Klasifikasi Gambar ======
-    elif page == "Klasifikasi Gambar":
-        st.markdown('<div class="section-title">📊 Hasil Klasifikasi Gambar</div>', unsafe_allow_html=True)
+    else:
+        st.info("Silakan unggah gambar terlebih dahulu.")
+
+# ====== Halaman Klasifikasi Gambar ======
+elif page == "Klasifikasi Gambar":
+    st.markdown('<div class="section-title">📤 Upload & Hasil Klasifikasi</div>', unsafe_allow_html=True)
+    uploaded_file = st.file_uploader("Seret atau pilih gambar untuk klasifikasi 👇", type=["jpg", "jpeg", "png"])
+
+    if uploaded_file is not None:
+        img = Image.open(uploaded_file)
+        st.image(img, caption="🖼️ Gambar yang Diupload", use_container_width=True)
 
         img_resized = img.resize((224, 224))
-        img_array_cls = image.img_to_array(img_resized)
-        img_array_cls = np.expand_dims(img_array_cls, axis=0)
-        img_array_cls = img_array_cls / 255.0
+        img_array = image.img_to_array(img_resized)
+        img_array = np.expand_dims(img_array, axis=0)
+        img_array = img_array / 255.0
 
-        prediction = classifier.predict(img_array_cls)
+        prediction = classifier.predict(img_array)
         class_index = np.argmax(prediction)
         accuracy = float(np.max(prediction)) * 100
 
@@ -147,5 +148,5 @@ if uploaded_file is not None:
             f'<div class="detect-result">📊 <b>Hasil Prediksi:</b> {class_index}<br>🎯 <b>Akurasi:</b> {accuracy:.2f}%</div>',
             unsafe_allow_html=True
         )
-else:
-    st.info("Silakan unggah gambar terlebih dahulu.")
+    else:
+        st.info("Silakan unggah gambar terlebih dahulu.")
