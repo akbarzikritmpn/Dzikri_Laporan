@@ -4,6 +4,7 @@ import tensorflow as tf
 from tensorflow.keras.preprocessing import image
 import numpy as np
 from PIL import Image
+import cv2  # ✅ Tambahan
 
 # ====== Load Model ======
 @st.cache_resource
@@ -92,14 +93,12 @@ col1, col2 = st.columns([1, 2])
 
 # ---- Kolom Kiri: Pilih Mode ----
 with col1:
-    st.markdown('<div class="section-box">', unsafe_allow_html=True)
     st.markdown('<div class="section-title">⚙️ Pilih Mode</div>', unsafe_allow_html=True)
     mode = st.radio("Mode Analisis:", ["Deteksi Objek (YOLO)", "Klasifikasi Gambar"])
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ---- Kolom Kanan: Upload & Hasil ----
 with col2:
-    st.markdown('<div class="section-box">', unsafe_allow_html=True)
     st.markdown('<div class="section-title">📤 Upload & Hasil Deteksi / Klasifikasi</div>', unsafe_allow_html=True)
     uploaded_file = st.file_uploader("Seret atau pilih gambar di sini 👇", type=["jpg", "jpeg", "png"])
 
@@ -108,10 +107,28 @@ with col2:
         st.image(img, caption="🖼️ Gambar yang Diupload", use_container_width=True)
 
         if mode == "Deteksi Objek (YOLO)":
+            # ==== DETEKSI OBJEK DENGAN BOUNDING BOX MANUAL ====
             img_array = np.array(img)
             results = yolo_model(img_array)
-            result_img = results[0].plot()
-            st.image(result_img, caption="📦 Hasil Deteksi", use_container_width=True)
+            img_with_boxes = img_array.copy()
+
+            # Ambil nama kelas dari model YOLO
+            class_names = yolo_model.names
+
+            for box in results[0].boxes:
+                xmin, ymin, xmax, ymax = map(int, box.xyxy[0])
+                confidence = float(box.conf[0])
+                label_index = int(box.cls[0])
+                label_name = class_names[label_index]
+
+                # Gambar kotak hijau
+                cv2.rectangle(img_with_boxes, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2)
+                # Tambah label + confidence
+                cv2.putText(img_with_boxes, f"{label_name} {confidence:.2f}",
+                            (xmin, max(ymin - 10, 20)), cv2.FONT_HERSHEY_SIMPLEX,
+                            0.6, (0, 255, 0), 2, cv2.LINE_AA)
+
+            st.image(img_with_boxes, caption="📦 Hasil Deteksi dengan Bounding Box", use_container_width=True)
             st.markdown('<div class="detect-result">✅ Deteksi objek berhasil dilakukan.</div>', unsafe_allow_html=True)
 
         elif mode == "Klasifikasi Gambar":
@@ -124,8 +141,13 @@ with col2:
             class_index = np.argmax(prediction)
             accuracy = float(np.max(prediction)) * 100
 
+            # ✅ Opsional: kalau kamu punya daftar nama kelas klasifikasi
+            # ganti bagian bawah ini:
+            class_labels = ["Kelas 1", "Kelas 2", "Kelas 3", "Kelas 4", "Kelas 5"]  # sesuaikan
+            class_name = class_labels[class_index] if class_index < len(class_labels) else str(class_index)
+
             st.markdown(
-                f'<div class="detect-result">📊 <b>Hasil Prediksi:</b> {class_index}<br>🎯 <b>Akurasi:</b> {accuracy:.2f}%</div>',
+                f'<div class="detect-result">📊 <b>Hasil Prediksi:</b> {class_name}<br>🎯 <b>Akurasi:</b> {accuracy:.2f}%</div>',
                 unsafe_allow_html=True
             )
     else:
