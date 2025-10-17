@@ -121,4 +121,23 @@ if uploaded_file is not None:
             cv2.putText(img_with_boxes, f"{label} {confidence:.2f}", (xmin, ymin - 10),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
 
-        st.image(img_with_boxes, capt
+        st.image(img_with_boxes, caption="📦 Hasil Deteksi dengan Bounding Box", use_container_width=True)
+        st.markdown('<div class="detect-result">✅ Deteksi objek berhasil dilakukan.</div>', unsafe_allow_html=True)
+
+    elif page == "Klasifikasi Gambar":
+        st.markdown('<div class="section-title">📊 Hasil Klasifikasi Gambar</div>', unsafe_allow_html=True)
+        img_resized = img.resize((224, 224))
+        img_array_cls = image.img_to_array(img_resized)
+        img_array_cls = np.expand_dims(img_array_cls, axis=0)
+        img_array_cls = img_array_cls / 255.0
+
+        prediction = classifier.predict(img_array_cls)
+        class_index = np.argmax(prediction)
+        accuracy = float(np.max(prediction)) * 100
+
+        st.markdown(
+            f'<div class="detect-result">📊 <b>Hasil Prediksi:</b> {class_index}<br>🎯 <b>Akurasi:</b> {accuracy:.2f}%</div>',
+            unsafe_allow_html=True
+        )
+else:
+    st.info("Silakan unggah gambar terlebih dahulu.")
