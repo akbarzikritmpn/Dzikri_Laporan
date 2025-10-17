@@ -22,15 +22,22 @@ st.markdown("""
     color: #2d4739;
     font-family: 'Arial', sans-serif;
 }
+
+/* ====== Kotak Hijau Judul Utama ====== */
 .main-title {
+    background: linear-gradient(145deg, #6b9474, #547a64);
+    border: 3px solid #c9e7c0;
+    border-radius: 20px;
+    color: #eaf4e2;
     text-align: center;
-    font-size: 30px;
+    padding: 20px;
+    font-size: 28px;
     font-weight: bold;
-    color: #2d4739;
-    margin-top: 10px;
-    margin-bottom: 30px;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    margin-bottom: 25px;
+    box-shadow: 4px 4px 8px rgba(0,0,0,0.25);
 }
+
+/* ====== Kotak Pilih Mode & Upload ====== */
 .section-box {
     background: linear-gradient(145deg, #7ba883, #547a64);
     border-radius: 20px;
@@ -38,8 +45,9 @@ st.markdown("""
     padding: 25px;
     color: #d6edc7;
     box-shadow: 4px 4px 8px rgba(0,0,0,0.25);
-    height: 100%;
 }
+
+/* ====== Judul Kecil dalam Kotak ====== */
 .section-title {
     font-size: 22px;
     font-weight: bold;
@@ -51,6 +59,8 @@ st.markdown("""
     text-align: center;
     border: 2px solid #c9e7c0;
 }
+
+/* ====== Upload Box ====== */
 div[data-testid="stFileUploader"] {
     background: #7ba883;
     border: 2px dashed #c9e7c0;
@@ -59,12 +69,8 @@ div[data-testid="stFileUploader"] {
     text-align: center;
     color: #f0f8ec !important;
 }
-.image-preview {
-    border-radius: 10px;
-    border: 2px solid #c9e7c0;
-    margin-top: 10px;
-    box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
-}
+
+/* ====== Hasil Deteksi/Klasifikasi ====== */
 .detect-result {
     background: #6f9b7c;
     border: 2px solid #c9e7c0;
@@ -78,10 +84,10 @@ div[data-testid="stFileUploader"] {
 </style>
 """, unsafe_allow_html=True)
 
-# ====== Judul Utama (tanpa kotak hijau) ======
-st.markdown('<div class="main-title">🧠 DETEKSI & KLASIFIKASI GAMBAR</div>', unsafe_allow_html=True)
+# ====== Judul Utama ======
+st.markdown('<div class="main-title">🧠 Deteksi dan Klasifikasi Gambar</div>', unsafe_allow_html=True)
 
-# ====== Layout 2 Kolom ======
+# ====== Layout ======
 col1, col2 = st.columns([1, 2])
 
 # ---- Kolom Kiri: Pilih Mode ----
