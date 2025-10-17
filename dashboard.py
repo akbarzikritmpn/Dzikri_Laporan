@@ -14,7 +14,7 @@ def load_models():
 
 yolo_model, classifier = load_models()
 
-# ====== CSS ======
+# ====== CSS (tidak ubah layout asli, hanya style kotak hijau) ======
 st.markdown("""
 <style>
 [data-testid="stAppViewContainer"] {
@@ -23,7 +23,7 @@ st.markdown("""
     font-family: 'Arial', sans-serif;
 }
 
-/* ====== Kotak Hijau Judul Utama ====== */
+/* ====== Kotak hijau judul utama ====== */
 .main-title {
     background: linear-gradient(145deg, #6b9474, #547a64);
     border: 3px solid #c9e7c0;
@@ -37,7 +37,7 @@ st.markdown("""
     box-shadow: 4px 4px 8px rgba(0,0,0,0.25);
 }
 
-/* ====== Kotak Hijau untuk Pilih Mode & Upload ====== */
+/* ====== Kotak hijau untuk bagian 'Pilih Mode' & 'Upload' ====== */
 .section-box {
     background: linear-gradient(145deg, #7ba883, #547a64);
     border-radius: 20px;
@@ -47,7 +47,7 @@ st.markdown("""
     box-shadow: 4px 4px 8px rgba(0,0,0,0.25);
 }
 
-/* ====== Judul dalam Kotak ====== */
+/* ====== Judul dalam kotak ====== */
 .section-title {
     font-size: 22px;
     font-weight: bold;
@@ -60,7 +60,7 @@ st.markdown("""
     border: 2px solid #c9e7c0;
 }
 
-/* ====== Upload Box ====== */
+/* ====== Upload box ====== */
 div[data-testid="stFileUploader"] {
     background: #7ba883;
     border: 2px dashed #c9e7c0;
@@ -70,7 +70,7 @@ div[data-testid="stFileUploader"] {
     color: #f0f8ec !important;
 }
 
-/* ====== Hasil Deteksi / Klasifikasi ====== */
+/* ====== Hasil deteksi / klasifikasi ====== */
 .detect-result {
     background: #6f9b7c;
     border: 2px solid #c9e7c0;
@@ -84,20 +84,20 @@ div[data-testid="stFileUploader"] {
 </style>
 """, unsafe_allow_html=True)
 
-# ====== Judul Utama ======
+# ====== Judul utama (tambahan kotak hijau) ======
 st.markdown('<div class="main-title">🧠 Deteksi dan Klasifikasi Gambar</div>', unsafe_allow_html=True)
 
-# ====== Layout (tetap sesuai dashboard asli) ======
+# ====== Layout (ASLI – tidak diubah sama sekali) ======
 col1, col2 = st.columns([1, 2])
 
-# ---- Kolom Kiri: Pilih Mode ----
+# ---- Kolom kiri: Pilih Mode ----
 with col1:
     st.markdown('<div class="section-box">', unsafe_allow_html=True)
     st.markdown('<div class="section-title">⚙️ Pilih Mode</div>', unsafe_allow_html=True)
     mode = st.radio("Mode Analisis:", ["Deteksi Objek (YOLO)", "Klasifikasi Gambar"])
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ---- Kolom Kanan: Upload & Hasil ----
+# ---- Kolom kanan: Upload & Hasil ----
 with col2:
     st.markdown('<div class="section-box">', unsafe_allow_html=True)
     st.markdown('<div class="section-title">📤 Upload & Hasil Deteksi / Klasifikasi</div>', unsafe_allow_html=True)
