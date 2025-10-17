@@ -37,7 +37,7 @@ st.markdown("""
     box-shadow: 4px 4px 8px rgba(0,0,0,0.25);
 }
 
-/* ====== Kotak Pilih Mode & Upload ====== */
+/* ====== Kotak Hijau untuk Pilih Mode & Upload ====== */
 .section-box {
     background: linear-gradient(145deg, #7ba883, #547a64);
     border-radius: 20px;
@@ -47,7 +47,7 @@ st.markdown("""
     box-shadow: 4px 4px 8px rgba(0,0,0,0.25);
 }
 
-/* ====== Judul Kecil dalam Kotak ====== */
+/* ====== Judul dalam Kotak ====== */
 .section-title {
     font-size: 22px;
     font-weight: bold;
@@ -70,7 +70,7 @@ div[data-testid="stFileUploader"] {
     color: #f0f8ec !important;
 }
 
-/* ====== Hasil Deteksi/Klasifikasi ====== */
+/* ====== Hasil Deteksi / Klasifikasi ====== */
 .detect-result {
     background: #6f9b7c;
     border: 2px solid #c9e7c0;
@@ -87,17 +87,19 @@ div[data-testid="stFileUploader"] {
 # ====== Judul Utama ======
 st.markdown('<div class="main-title">🧠 Deteksi dan Klasifikasi Gambar</div>', unsafe_allow_html=True)
 
-# ====== Layout ======
+# ====== Layout (tetap sesuai dashboard asli) ======
 col1, col2 = st.columns([1, 2])
 
 # ---- Kolom Kiri: Pilih Mode ----
 with col1:
+    st.markdown('<div class="section-box">', unsafe_allow_html=True)
     st.markdown('<div class="section-title">⚙️ Pilih Mode</div>', unsafe_allow_html=True)
     mode = st.radio("Mode Analisis:", ["Deteksi Objek (YOLO)", "Klasifikasi Gambar"])
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ---- Kolom Kanan: Upload & Hasil ----
 with col2:
+    st.markdown('<div class="section-box">', unsafe_allow_html=True)
     st.markdown('<div class="section-title">📤 Upload & Hasil Deteksi / Klasifikasi</div>', unsafe_allow_html=True)
     uploaded_file = st.file_uploader("Seret atau pilih gambar di sini 👇", type=["jpg", "jpeg", "png"])
 
