@@ -18,7 +18,7 @@ def load_models():
 yolo_model, classifier = load_models()
 
 # ==========================
-# CSS MIRIP DESAIN
+# CSS
 # ==========================
 custom_style = """
 <style>
@@ -48,6 +48,7 @@ custom_style = """
     flex-direction: row;
     justify-content: space-between;
     align-items: flex-start;
+    gap: 30px;
 }
 
 /* KIRI */
@@ -57,9 +58,21 @@ custom_style = """
     padding: 20px;
     border-radius: 15px;
     border: 2px solid #c9e7c0;
-    text-align: center;
     color: #d6edc7;
     box-shadow: 3px 3px 6px rgba(0,0,0,0.25);
+}
+
+/* supaya uploader streamlit di dalam kotak */
+div[data-testid="stFileUploader"] {
+    background-color: rgba(255,255,255,0.1);
+    border: 2px dashed #c9e7c0;
+    border-radius: 10px;
+    padding: 10px;
+    color: #d6edc7 !important;
+}
+
+div[data-testid="stFileUploader"] section {
+    color: #d6edc7 !important;
 }
 
 /* KANAN */
@@ -78,6 +91,7 @@ custom_style = """
     font-size: 20px;
     font-weight: bold;
     margin-bottom: 10px;
+    text-align: center;
 }
 </style>
 """
@@ -96,9 +110,11 @@ st.markdown('<div class="main-container">', unsafe_allow_html=True)
 # KOTAK KIRI (UPLOAD)
 st.markdown('<div class="left-box">', unsafe_allow_html=True)
 st.markdown('<div class="box-label">UPLOAD GAMBAR</div>', unsafe_allow_html=True)
+
 uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png"])
 menu = st.radio("Pilih Mode:", ["Deteksi Objek (YOLO)", "Klasifikasi Gambar"], label_visibility="visible")
-st.markdown('</div>', unsafe_allow_html=True)
+
+st.markdown('</div>', unsafe_allow_html=True)  # tutup left box
 
 # KOTAK KANAN (GAMBAR)
 st.markdown('<div class="right-box">', unsafe_allow_html=True)
@@ -127,5 +143,5 @@ if uploaded_file is not None:
 else:
     st.info("Silakan unggah gambar terlebih dahulu di sebelah kiri.")
 
-st.markdown('</div>', unsafe_allow_html=True)  # Tutup right box
-st.markdown('</div>', unsafe_allow_html=True)  # Tutup main container
+st.markdown('</div>', unsafe_allow_html=True)  # tutup right box
+st.markdown('</div>', unsafe_allow_html=True)  # tutup main container
