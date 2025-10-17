@@ -96,12 +96,25 @@ div[data-testid="stFileUploader"] section {
     color: #d6edc7;
 }
 
-/* Gambar dalam kotak */
+/* Gambar */
 .image-preview {
     border-radius: 10px;
     border: 2px solid #c9e7c0;
     margin-top: 10px;
     box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+}
+
+/* Kotak hasil prediksi */
+.result-box {
+    background: #6f9b7c;
+    border: 2px solid #c9e7c0;
+    border-radius: 10px;
+    margin-top: 15px;
+    padding: 10px;
+    color: #eaf4e2;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.25);
+    font-weight: bold;
+    text-align: center;
 }
 </style>
 """
@@ -140,6 +153,8 @@ if uploaded_file is not None:
         result_img = results[0].plot()
         st.image(result_img, caption="Hasil Deteksi", use_container_width=True, output_format="auto")
 
+        st.markdown(f'<div class="result-box">✅ Deteksi objek berhasil dilakukan.</div>', unsafe_allow_html=True)
+
     elif menu == "Klasifikasi Gambar":
         img_resized = img.resize((224, 224))
         img_array = image.img_to_array(img_resized)
@@ -148,8 +163,12 @@ if uploaded_file is not None:
 
         prediction = classifier.predict(img_array)
         class_index = np.argmax(prediction)
-        st.success(f"Hasil Prediksi: {class_index}")
-        st.info(f"Probabilitas: {np.max(prediction):.4f}")
+        accuracy = float(np.max(prediction)) * 100
+
+        st.markdown(
+            f'<div class="result-box">📊 <b>Hasil Prediksi:</b> {class_index}<br>🎯 <b>Akurasi:</b> {accuracy:.2f}%</div>',
+            unsafe_allow_html=True
+        )
 else:
     st.info("Silakan unggah gambar terlebih dahulu di sebelah kiri.")
 
