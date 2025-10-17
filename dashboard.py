@@ -5,7 +5,7 @@ from tensorflow.keras.preprocessing import image
 import numpy as np
 from PIL import Image
 
-# ========== Load Model ==========
+# ====== Load Model ======
 @st.cache_resource
 def load_models():
     yolo_model = YOLO("model/Muhammad Akbar Dzikri_Laporan 4.pt")
@@ -14,7 +14,7 @@ def load_models():
 
 yolo_model, classifier = load_models()
 
-# ========== CSS ==========
+# ====== CSS ======
 st.markdown("""
 <style>
 [data-testid="stAppViewContainer"] {
@@ -31,19 +31,10 @@ st.markdown("""
     color: #d6edc7;
     font-size: 28px;
     font-weight: bold;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
 }
-.top-box {
-    background: linear-gradient(145deg, #7ba883, #547a64);
-    border-radius: 15px;
-    border: 2px solid #c9e7c0;
-    padding: 20px;
-    color: #d6edc7;
-    box-shadow: 3px 3px 6px rgba(0,0,0,0.25);
-    margin-bottom: 25px;
-}
-.right-box, .result-box {
+.left-box, .right-box {
     background: linear-gradient(145deg, #7ba883, #547a64);
     border-radius: 15px;
     border: 2px solid #c9e7c0;
@@ -78,51 +69,50 @@ div[data-testid="stFileUploader"] {
 </style>
 """, unsafe_allow_html=True)
 
-# ========== Title ==========
+# ====== Title ======
 st.markdown('<div class="title-box">🧠 DETEKSI & KLASIFIKASI GAMBAR</div>', unsafe_allow_html=True)
 
-# ========== Bagian Atas: Mode + Upload ==========
-st.markdown('<div class="top-box">', unsafe_allow_html=True)
-colA, colB = st.columns([1, 1.3])
+# ====== Layout Utama ======
+col1, col2 = st.columns([1, 2])
 
-with colA:
+# Kolom kiri: pilih mode
+with col1:
+    st.markdown('<div class="left-box">', unsafe_allow_html=True)
     st.markdown("### ⚙️ Pilih Mode")
     mode = st.radio("Mode Analisis:", ["Deteksi Objek (YOLO)", "Klasifikasi Gambar"])
+    st.markdown('</div>', unsafe_allow_html=True)
 
-with colB:
-    st.markdown("### 📤 Upload Gambar")
+# Kolom kanan: upload + hasil
+with col2:
+    st.markdown('<div class="right-box">', unsafe_allow_html=True)
+    st.markdown("### 📤 Upload & Hasil Deteksi / Klasifikasi")
     uploaded_file = st.file_uploader("Seret atau pilih gambar di sini 👇", type=["jpg", "jpeg", "png"])
-st.markdown('</div>', unsafe_allow_html=True)
 
-# ========== Bagian Hasil ==========
-st.markdown('<div class="right-box">', unsafe_allow_html=True)
-st.markdown("### 🖼️ Hasil Deteksi / Klasifikasi")
+    if uploaded_file is not None:
+        img = Image.open(uploaded_file)
+        st.image(img, caption="Gambar yang Diupload", use_container_width=True, output_format="auto")
 
-if uploaded_file is not None:
-    img = Image.open(uploaded_file)
-    st.image(img, caption="Gambar yang Diupload", use_container_width=True, output_format="auto")
+        if mode == "Deteksi Objek (YOLO)":
+            img_array = np.array(img)
+            results = yolo_model(img_array)
+            result_img = results[0].plot()
+            st.image(result_img, caption="Hasil Deteksi", use_container_width=True, output_format="auto")
+            st.markdown('<div class="detect-result">✅ Deteksi objek berhasil dilakukan.</div>', unsafe_allow_html=True)
 
-    if mode == "Deteksi Objek (YOLO)":
-        img_array = np.array(img)
-        results = yolo_model(img_array)
-        result_img = results[0].plot()
-        st.image(result_img, caption="Hasil Deteksi", use_container_width=True, output_format="auto")
-        st.markdown('<div class="detect-result">✅ Deteksi objek berhasil dilakukan.</div>', unsafe_allow_html=True)
+        elif mode == "Klasifikasi Gambar":
+            img_resized = img.resize((224, 224))
+            img_array = image.img_to_array(img_resized)
+            img_array = np.expand_dims(img_array, axis=0)
+            img_array = img_array / 255.0
 
-    elif mode == "Klasifikasi Gambar":
-        img_resized = img.resize((224, 224))
-        img_array = image.img_to_array(img_resized)
-        img_array = np.expand_dims(img_array, axis=0)
-        img_array = img_array / 255.0
+            prediction = classifier.predict(img_array)
+            class_index = np.argmax(prediction)
+            accuracy = float(np.max(prediction)) * 100
 
-        prediction = classifier.predict(img_array)
-        class_index = np.argmax(prediction)
-        accuracy = float(np.max(prediction)) * 100
-
-        st.markdown(
-            f'<div class="detect-result">📊 <b>Hasil Prediksi:</b> {class_index}<br>🎯 <b>Akurasi:</b> {accuracy:.2f}%</div>',
-            unsafe_allow_html=True
-        )
-else:
-    st.info("Silakan unggah gambar terlebih dahulu di atas.")
-st.markdown('</div>', unsafe_allow_html=True)
+            st.markdown(
+                f'<div class="detect-result">📊 <b>Hasil Prediksi:</b> {class_index}<br>🎯 <b>Akurasi:</b> {accuracy:.2f}%</div>',
+                unsafe_allow_html=True
+            )
+    else:
+        st.info("Silakan unggah gambar terlebih dahulu di atas.")
+    st.markdown('</div>', unsafe_allow_html=True)
