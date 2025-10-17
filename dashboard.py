@@ -78,11 +78,12 @@ div[data-testid="stFileUploader"] section {
 /* KANAN */
 .right-box {
     width: 65%;
-    background: linear-gradient(145deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+    background: linear-gradient(145deg, #7ba883, #547a64);
     border: 2px solid #c9e7c0;
     border-radius: 15px;
     text-align: center;
     padding: 20px;
+    color: #d6edc7;
     box-shadow: 3px 3px 6px rgba(0,0,0,0.25);
 }
 
@@ -90,8 +91,17 @@ div[data-testid="stFileUploader"] section {
 .box-label {
     font-size: 20px;
     font-weight: bold;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     text-align: center;
+    color: #d6edc7;
+}
+
+/* Gambar dalam kotak */
+.image-preview {
+    border-radius: 10px;
+    border: 2px solid #c9e7c0;
+    margin-top: 10px;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
 }
 </style>
 """
@@ -118,17 +128,17 @@ st.markdown('</div>', unsafe_allow_html=True)  # tutup left-box
 
 # KOTAK KANAN
 st.markdown('<div class="right-box">', unsafe_allow_html=True)
+st.markdown('<div class="box-label">GAMBAR</div>', unsafe_allow_html=True)
 
 if uploaded_file is not None:
-    st.markdown('<div class="box-label">GAMBAR</div>', unsafe_allow_html=True)
     img = Image.open(uploaded_file)
-    st.image(img, caption="Gambar yang Diupload", use_container_width=True)
+    st.image(img, caption="Gambar yang Diupload", use_container_width=True, output_format="auto")
 
     if menu == "Deteksi Objek (YOLO)":
         img_array = np.array(img)
         results = yolo_model(img_array)
         result_img = results[0].plot()
-        st.image(result_img, caption="Hasil Deteksi", use_container_width=True)
+        st.image(result_img, caption="Hasil Deteksi", use_container_width=True, output_format="auto")
 
     elif menu == "Klasifikasi Gambar":
         img_resized = img.resize((224, 224))
