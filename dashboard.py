@@ -5,6 +5,9 @@ from tensorflow.keras.preprocessing import image
 import numpy as np
 from PIL import Image
 
+# ====== Konfigurasi halaman agar lebar penuh ======
+st.set_page_config(layout="wide")
+
 # ====== Load Model ======
 @st.cache_resource
 def load_models():
@@ -14,16 +17,19 @@ def load_models():
 
 yolo_model, classifier = load_models()
 
-# ====== CSS (tidak ubah layout asli, hanya style kotak hijau) ======
+# ====== CSS Styling ======
 st.markdown("""
 <style>
+/* ====== Full width container ====== */
 [data-testid="stAppViewContainer"] {
     background: linear-gradient(135deg, #d6edc7, #95bfa1);
     color: #2d4739;
     font-family: 'Arial', sans-serif;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
 }
 
-/* ====== Kotak hijau judul utama ====== */
+/* ====== Kotak judul utama ====== */
 .main-title {
     background: linear-gradient(145deg, #6b9474, #547a64);
     border: 3px solid #c9e7c0;
@@ -35,6 +41,7 @@ st.markdown("""
     font-weight: bold;
     margin-bottom: 25px;
     box-shadow: 4px 4px 8px rgba(0,0,0,0.25);
+    width: 100%;
 }
 
 /* ====== Kotak hijau untuk bagian 'Pilih Mode' & 'Upload' ====== */
@@ -84,22 +91,20 @@ div[data-testid="stFileUploader"] {
 </style>
 """, unsafe_allow_html=True)
 
-# ====== Judul utama (tambahan kotak hijau) ======
+# ====== Judul utama ======
 st.markdown('<div class="main-title">🧠 Deteksi dan Klasifikasi Gambar</div>', unsafe_allow_html=True)
 
-# ====== Layout (ASLI – tidak diubah sama sekali) ======
-col1, col2 = st.columns([1, 2])
+# ====== Layout 2 kolom seimbang (tanpa margin kosong) ======
+col1, col2 = st.columns(2)
 
 # ---- Kolom kiri: Pilih Mode ----
 with col1:
-    st.markdown('<div class="section-box">', unsafe_allow_html=True)
     st.markdown('<div class="section-title">⚙️ Pilih Mode</div>', unsafe_allow_html=True)
     mode = st.radio("Mode Analisis:", ["Deteksi Objek (YOLO)", "Klasifikasi Gambar"])
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ---- Kolom kanan: Upload & Hasil ----
 with col2:
-    st.markdown('<div class="section-box">', unsafe_allow_html=True)
     st.markdown('<div class="section-title">📤 Upload & Hasil Deteksi / Klasifikasi</div>', unsafe_allow_html=True)
     uploaded_file = st.file_uploader("Seret atau pilih gambar di sini 👇", type=["jpg", "jpeg", "png"])
 
