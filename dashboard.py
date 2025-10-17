@@ -41,18 +41,18 @@ custom_style = """
     margin-bottom: 30px;
 }
 
-/* LAYOUT */
+/* LAYOUT DUA KOLOM */
 .main-container {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 30px;
+    gap: 40px;
 }
 
 /* KIRI */
 .left-box {
-    width: 30%;
+    width: 35%;
     background: linear-gradient(145deg, #7ba883, #547a64);
     padding: 25px;
     border-radius: 15px;
@@ -61,7 +61,7 @@ custom_style = """
     box-shadow: 3px 3px 6px rgba(0,0,0,0.25);
 }
 
-/* Upload box di dalam kotak hijau */
+/* Upload box */
 div[data-testid="stFileUploader"] {
     background: #7ba883;
     border: 2px dashed #c9e7c0;
@@ -77,7 +77,7 @@ div[data-testid="stFileUploader"] section {
 
 /* KANAN */
 .right-box {
-    width: 65%;
+    width: 60%;
     background: linear-gradient(145deg, #7ba883, #547a64);
     border: 2px solid #c9e7c0;
     border-radius: 15px;
@@ -126,22 +126,29 @@ st.markdown(custom_style, unsafe_allow_html=True)
 st.markdown('<div class="title-box">🧠 DETEKSI & KLASIFIKASI GAMBAR</div>', unsafe_allow_html=True)
 
 # ==========================
-# KONTEN
+# KONTEN DUA KOLOM
 # ==========================
 st.markdown('<div class="main-container">', unsafe_allow_html=True)
 
-# KOTAK KIRI
+# ==========================
+# KOLOM KIRI
+# ==========================
 st.markdown('<div class="left-box">', unsafe_allow_html=True)
-st.markdown('<div class="box-label">UPLOAD GAMBAR</div>', unsafe_allow_html=True)
+st.markdown('<div class="box-label">PENGATURAN INPUT</div>', unsafe_allow_html=True)
 
-uploaded_file = st.file_uploader("Seret atau pilih gambar di sini 👇", type=["jpg", "jpeg", "png"])
+# Pilih mode di dalam kotak
 menu = st.radio("Pilih Mode:", ["Deteksi Objek (YOLO)", "Klasifikasi Gambar"], label_visibility="visible")
+
+# Upload gambar di bawahnya
+uploaded_file = st.file_uploader("Seret atau pilih gambar di sini 👇", type=["jpg", "jpeg", "png"])
 
 st.markdown('</div>', unsafe_allow_html=True)  # tutup left-box
 
-# KOTAK KANAN
+# ==========================
+# KOLOM KANAN (HASIL)
+# ==========================
 st.markdown('<div class="right-box">', unsafe_allow_html=True)
-st.markdown('<div class="box-label">GAMBAR</div>', unsafe_allow_html=True)
+st.markdown('<div class="box-label">HASIL DETEKSI / KLASIFIKASI</div>', unsafe_allow_html=True)
 
 if uploaded_file is not None:
     img = Image.open(uploaded_file)
