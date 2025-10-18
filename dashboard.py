@@ -18,18 +18,14 @@ yolo_model, classifier = load_models()
 # ====== CSS ======
 st.markdown("""
 <style>
-/* ===== Background umum ===== */
 [data-testid="stAppViewContainer"] {
     background: linear-gradient(135deg, #a3cbb8, #6a9080);
     color: #cadfc7;
     font-family: 'Arial', sans-serif;
     padding: 2rem 3rem;
-    margin: 0;
 }
-[data-testid="stHeader"] { display: none; }
-[data-testid="stToolbar"] { display: none; }
+[data-testid="stHeader"], [data-testid="stToolbar"] { display: none; }
 
-/* ===== Halaman Awal ===== */
 .welcome-box {
     background: linear-gradient(145deg, #57876a, #9dbcae);
     border-radius: 12px;
@@ -39,7 +35,6 @@ st.markdown("""
     font-weight: bold;
     font-size: 18px;
     border: 1.5px solid #c9e7c0;
-    box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
 }
 .main-box {
     background: linear-gradient(145deg, #8daaa5, #618472);
@@ -51,34 +46,6 @@ st.markdown("""
     text-align: center;
     border: 2px solid #c9e7c0;
     box-shadow: 4px 4px 10px rgba(0,0,0,0.3);
-    line-height: 1.3;
-}
-.button-box {
-    background: linear-gradient(145deg, #7e9c7d, #55775b);
-    border-radius: 12px;
-    padding: 10px 25px;
-    width: 160px;
-    margin: 0 auto;
-    text-align: center;
-    font-weight: bold;
-    color: #cadfc7;
-    cursor: pointer;
-    border: 1.5px solid #c9e7c0;
-    box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
-    user-select: none;
-    transition: background 0.3s ease;
-}
-.button-box:hover {
-    background: linear-gradient(145deg, #55775b, #7e9c7d);
-}
-
-/* ===== Halaman Deteksi dan Klasifikasi ===== */
-.block-container {
-    padding-top: 0rem !important;
-    padding-bottom: 0rem !important;
-    padding-left: 2rem !important;
-    padding-right: 2rem !important;
-    max-width: 100% !important;
 }
 .main-title {
     background: linear-gradient(145deg, #6b9474, #547a64);
@@ -91,16 +58,6 @@ st.markdown("""
     font-weight: bold;
     margin: 20px auto 25px auto;
     box-shadow: 4px 4px 8px rgba(0,0,0,0.25);
-    width: 100%;
-}
-.section-box {
-    background: linear-gradient(145deg, #7ba883, #547a64);
-    border-radius: 20px;
-    border: 2px solid #c9e7c0;
-    padding: 25px;
-    color: #d6edc7;
-    box-shadow: 4px 4px 8px rgba(0,0,0,0.25);
-    width: 100%;
 }
 .section-title {
     font-size: 22px;
@@ -113,25 +70,6 @@ st.markdown("""
     text-align: center;
     border: 2px solid #c9e7c0;
 }
-div[data-testid="stFileUploader"] {
-    background: #7ba883;
-    border: 2px dashed #c9e7c0;
-    border-radius: 12px;
-    padding: 15px;
-    text-align: center;
-    color: #f0f8ec !important;
-}
-.detect-result {
-    background: #6f9b7c;
-    border: 2px solid #c9e7c0;
-    border-radius: 10px;
-    margin-top: 15px;
-    padding: 10px;
-    color: #eaf4e2;
-    font-weight: bold;
-    text-align: center;
-}
-/* ===== Kotak Penjelasan Mode ===== */
 .mode-explanation {
     background: #6f9b7c;
     border: 2px solid #c9e7c0;
@@ -143,7 +81,16 @@ div[data-testid="stFileUploader"] {
     text-align: justify;
     box-shadow: 2px 2px 6px rgba(0,0,0,0.25);
 }
-/* ===== Tombol Kembali ===== */
+.detect-result {
+    background: #6f9b7c;
+    border: 2px solid #c9e7c0;
+    border-radius: 10px;
+    margin-top: 15px;
+    padding: 10px;
+    color: #eaf4e2;
+    font-weight: bold;
+    text-align: center;
+}
 .return-button {
     margin-top: 40px;
 }
@@ -169,44 +116,44 @@ def halaman_awal():
         st.session_state['page'] = 'main'
 
 
-# ====== Halaman Deteksi dan Klasifikasi ======
+# ====== Halaman Utama ======
 def halaman_main():
     st.markdown('<div class="main-title">🧠 Deteksi dan Klasifikasi Gambar</div>', unsafe_allow_html=True)
     col1, col2 = st.columns([1, 2])
 
+    # Kolom kiri = Pilih Mode
     with col1:
         st.markdown('<div class="section-title">⚙️ Pilih Mode</div>', unsafe_allow_html=True)
         mode = st.radio("Mode Analisis:", ["Deteksi Objek (YOLO)", "Klasifikasi Gambar"])
 
-        # === Kotak penjelasan mode ===
+        # Penjelasan dinamis
         if mode == "Deteksi Objek (YOLO)":
-            penjelasan = """
+            st.markdown("""
             <div class="mode-explanation">
             Mode ini menggunakan model <b>YOLO (You Only Look Once)</b> untuk mendeteksi berbagai objek dalam gambar.
             Setiap objek akan diberi <b>bounding box hijau</b> lengkap dengan label dan tingkat kepercayaannya.
             Cocok digunakan untuk menganalisis gambar yang memiliki lebih dari satu objek.
             </div>
-            """
+            """, unsafe_allow_html=True)
         else:
-            penjelasan = """
+            st.markdown("""
             <div class="mode-explanation">
             Mode ini menjalankan proses <b>klasifikasi gambar</b> menggunakan model CNN (Convolutional Neural Network).
             Gambar akan diubah menjadi ukuran 224x224 piksel, lalu diprediksi ke dalam salah satu kelas yang tersedia.
             Mode ini berguna untuk mengenali jenis atau kategori dari satu gambar utama.
             </div>
-            """
-        st.markdown(penjelasan, unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
 
+    # Kolom kanan = Upload & hasil
     with col2:
         st.markdown('<div class="section-title">📤 Upload & Hasil Deteksi / Klasifikasi</div>', unsafe_allow_html=True)
         uploaded_file = st.file_uploader("Seret atau pilih gambar di sini 👇", type=["jpg", "jpeg", "png"])
 
         if uploaded_file is not None:
             img = Image.open(uploaded_file)
-            st.image(img, caption="🖼️ Gambar yang Diupload", use_container_width=True)
+            img_array = np.array(img)
 
             if mode == "Deteksi Objek (YOLO)":
-                img_array = np.array(img)
                 results = yolo_model(img_array)
                 img_with_boxes = img_array.copy()
                 class_names = yolo_model.names
@@ -221,19 +168,28 @@ def halaman_main():
                                 (xmin, max(ymin - 10, 20)), cv2.FONT_HERSHEY_SIMPLEX,
                                 0.6, (0, 255, 0), 2, cv2.LINE_AA)
 
-                st.image(img_with_boxes, caption="📦 Hasil Deteksi dengan Bounding Box", use_container_width=True)
+                # tampilkan dua gambar berdampingan dan kecil
+                colA, colB = st.columns(2)
+                with colA:
+                    st.image(img, caption="🖼️ Gambar Asli", width=250)
+                with colB:
+                    st.image(img_with_boxes, caption="📦 Hasil Deteksi", width=250)
+
                 st.markdown('<div class="detect-result">✅ Deteksi objek berhasil dilakukan.</div>', unsafe_allow_html=True)
 
             elif mode == "Klasifikasi Gambar":
                 img_resized = img.resize((224, 224))
-                img_array = image.img_to_array(img_resized)
-                img_array = np.expand_dims(img_array, axis=0) / 255.0
-                prediction = classifier.predict(img_array)
+                arr = image.img_to_array(img_resized)
+                arr = np.expand_dims(arr, axis=0) / 255.0
+                prediction = classifier.predict(arr)
                 class_index = np.argmax(prediction)
                 accuracy = float(np.max(prediction)) * 100
 
                 class_labels = ["Kelas 1", "Kelas 2", "Kelas 3", "Kelas 4", "Kelas 5"]
                 class_name = class_labels[class_index] if class_index < len(class_labels) else str(class_index)
+
+                # tampilkan gambar kecil
+                st.image(img, caption="🖼️ Gambar Diupload", width=250)
                 st.markdown(
                     f'<div class="detect-result">📊 <b>Hasil Prediksi:</b> {class_name}<br>🎯 <b>Akurasi:</b> {accuracy:.2f}%</div>',
                     unsafe_allow_html=True
@@ -241,7 +197,6 @@ def halaman_main():
         else:
             st.info("Silakan unggah gambar terlebih dahulu di atas.")
 
-    # Tambahkan jarak di atas tombol kembali
     st.markdown('<div class="return-button"></div>', unsafe_allow_html=True)
     if st.button("Kembali ke Halaman Awal"):
         st.session_state['page'] = 'home'
