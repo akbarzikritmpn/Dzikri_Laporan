@@ -111,14 +111,12 @@ col1, col2 = st.columns([1, 2])
 
 # ---- Kolom Kiri: Pilih Mode ----
 with col1:
-    st.markdown('<div class="section-box">', unsafe_allow_html=True)
     st.markdown('<div class="section-title">⚙️ Pilih Mode</div>', unsafe_allow_html=True)
     mode = st.radio("Mode Analisis:", ["Deteksi Objek (YOLO)", "Klasifikasi Gambar"])
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ---- Kolom Kanan: Upload & Hasil ----
 with col2:
-    st.markdown('<div class="section-box">', unsafe_allow_html=True)
     st.markdown('<div class="section-title">📤 Upload & Hasil Deteksi / Klasifikasi</div>', unsafe_allow_html=True)
     uploaded_file = st.file_uploader("Seret atau pilih gambar di sini 👇", type=["jpg", "jpeg", "png"])
 
