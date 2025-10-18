@@ -18,14 +18,25 @@ yolo_model, classifier = load_models()
 # ====== CSS ======
 st.markdown("""
 <style>
+/* ===== Fullscreen Layout ===== */
 [data-testid="stAppViewContainer"] {
     background: linear-gradient(135deg, #a3cbb8, #6a9080);
     color: #cadfc7;
     font-family: 'Arial', sans-serif;
-    padding: 2rem 3rem;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100vw !important;
+}
+.block-container {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+    max-width: 100% !important;
 }
 [data-testid="stHeader"], [data-testid="stToolbar"] { display: none; }
 
+/* ===== Box Styles ===== */
 .welcome-box {
     background: linear-gradient(145deg, #57876a, #9dbcae);
     border-radius: 12px;
@@ -48,21 +59,6 @@ st.markdown("""
     border: 2px solid #c9e7c0;
     box-shadow: 4px 4px 10px rgba(0,0,0,0.3);
 }
-.button-box {
-    background: linear-gradient(145deg, #7e9c7d, #55775b);
-    border-radius: 12px;
-    padding: 10px 25px;
-    width: 160px;
-    margin: 0 auto;
-    text-align: center;
-    font-weight: bold;
-    color: #cadfc7;
-    cursor: pointer;
-    border: 1.5px solid #c9e7c0;
-    box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
-}
-.button-box:hover { background: linear-gradient(145deg, #55775b, #7e9c7d); }
-
 .main-title {
     background: linear-gradient(145deg, #6b9474, #547a64);
     border: 3px solid #c9e7c0;
@@ -72,7 +68,7 @@ st.markdown("""
     padding: 20px;
     font-size: 28px;
     font-weight: bold;
-    margin: 20px auto 25px auto;
+    margin: 15px auto 30px auto;
     box-shadow: 4px 4px 8px rgba(0,0,0,0.25);
     width: 100%;
 }
@@ -95,6 +91,17 @@ st.markdown("""
     text-align: center;
     border: 2px solid #c9e7c0;
 }
+.explanation-box {
+    background: #6f9b7c;
+    border: 2px solid #c9e7c0;
+    border-radius: 12px;
+    padding: 12px 18px;
+    color: #eaf4e2;
+    font-size: 15px;
+    margin-top: -5px;
+    margin-bottom: 20px;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+}
 div[data-testid="stFileUploader"] {
     background: #7ba883;
     border: 2px dashed #c9e7c0;
@@ -112,17 +119,6 @@ div[data-testid="stFileUploader"] {
     color: #eaf4e2;
     font-weight: bold;
     text-align: center;
-}
-.explanation-box {
-    background: #6f9b7c;
-    border: 2px solid #c9e7c0;
-    border-radius: 12px;
-    padding: 12px 18px;
-    color: #eaf4e2;
-    font-size: 15px;
-    margin-top: -5px;
-    margin-bottom: 20px;
-    box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
 }
 </style>
 """, unsafe_allow_html=True)
@@ -142,26 +138,27 @@ def halaman_awal():
 # ====== Halaman Utama ======
 def halaman_main():
     st.markdown('<div class="main-title">🧠 Deteksi dan Klasifikasi Gambar</div>', unsafe_allow_html=True)
-    col1, col2 = st.columns([1, 2])
+
+    # Full-width layout
+    col1, col2 = st.columns([1, 2], gap="large")
 
     # === Kolom Kiri ===
     with col1:
         st.markdown('<div class="section-title">⚙️ Pilih Mode</div>', unsafe_allow_html=True)
         mode = st.radio("Mode Analisis:", ["Deteksi Objek (YOLO)", "Klasifikasi Gambar"])
 
-        # 🔹 Kotak penjelasan dinamis
         if mode == "Deteksi Objek (YOLO)":
             penjelasan = """
             <div class="explanation-box">
-            Mode ini menggunakan model <b>YOLO</b> untuk mendeteksi objek dalam gambar.
-            Setiap objek akan diberi kotak hijau dan label nama serta tingkat kepercayaan deteksi.
+            Mode ini menggunakan <b>YOLO</b> untuk mendeteksi objek dalam gambar.
+            Setiap objek diberi kotak hijau dan label nama dengan tingkat kepercayaan.
             </div>
             """
         else:
             penjelasan = """
             <div class="explanation-box">
             Mode ini menggunakan <b>Model Klasifikasi CNN</b> untuk mengenali kategori gambar.
-            Gambar akan diklasifikasikan ke dalam salah satu kelas dengan tingkat akurasi tertentu.
+            Gambar akan diklasifikasikan ke salah satu kelas dengan tingkat akurasi tertentu.
             </div>
             """
         st.markdown(penjelasan, unsafe_allow_html=True)
