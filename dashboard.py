@@ -143,11 +143,15 @@ div[data-testid="stFileUploader"] {
     text-align: justify;
     box-shadow: 2px 2px 6px rgba(0,0,0,0.25);
 }
+/* ===== Tombol Kembali ===== */
+.return-button {
+    margin-top: 40px;
+}
 </style>
 """, unsafe_allow_html=True)
 
 
-# ====== Session state untuk halaman ======
+# ====== Session state ======
 if 'page' not in st.session_state:
     st.session_state['page'] = 'home'
 
@@ -174,7 +178,7 @@ def halaman_main():
         st.markdown('<div class="section-title">⚙️ Pilih Mode</div>', unsafe_allow_html=True)
         mode = st.radio("Mode Analisis:", ["Deteksi Objek (YOLO)", "Klasifikasi Gambar"])
 
-        # ✅ Tambahkan kotak penjelasan yang berubah sesuai mode
+        # === Kotak penjelasan mode ===
         if mode == "Deteksi Objek (YOLO)":
             penjelasan = """
             <div class="mode-explanation">
@@ -237,11 +241,13 @@ def halaman_main():
         else:
             st.info("Silakan unggah gambar terlebih dahulu di atas.")
 
+    # Tambahkan jarak di atas tombol kembali
+    st.markdown('<div class="return-button"></div>', unsafe_allow_html=True)
     if st.button("Kembali ke Halaman Awal"):
         st.session_state['page'] = 'home'
 
 
-# ====== Routing Halaman ======
+# ====== Routing ======
 if st.session_state['page'] == 'home':
     halaman_awal()
 elif st.session_state['page'] == 'main':
