@@ -35,6 +35,7 @@ st.markdown("""
     font-weight: bold;
     font-size: 18px;
     border: 1.5px solid #c9e7c0;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
 }
 .main-box {
     background: linear-gradient(145deg, #8daaa5, #618472);
@@ -47,6 +48,21 @@ st.markdown("""
     border: 2px solid #c9e7c0;
     box-shadow: 4px 4px 10px rgba(0,0,0,0.3);
 }
+.button-box {
+    background: linear-gradient(145deg, #7e9c7d, #55775b);
+    border-radius: 12px;
+    padding: 10px 25px;
+    width: 160px;
+    margin: 0 auto;
+    text-align: center;
+    font-weight: bold;
+    color: #cadfc7;
+    cursor: pointer;
+    border: 1.5px solid #c9e7c0;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+}
+.button-box:hover { background: linear-gradient(145deg, #55775b, #7e9c7d); }
+
 .main-title {
     background: linear-gradient(145deg, #6b9474, #547a64);
     border: 3px solid #c9e7c0;
@@ -57,6 +73,15 @@ st.markdown("""
     font-size: 28px;
     font-weight: bold;
     margin: 20px auto 25px auto;
+    box-shadow: 4px 4px 8px rgba(0,0,0,0.25);
+    width: 100%;
+}
+.section-box {
+    background: linear-gradient(145deg, #7ba883, #547a64);
+    border-radius: 20px;
+    border: 2px solid #c9e7c0;
+    padding: 25px;
+    color: #d6edc7;
     box-shadow: 4px 4px 8px rgba(0,0,0,0.25);
 }
 .section-title {
@@ -70,16 +95,13 @@ st.markdown("""
     text-align: center;
     border: 2px solid #c9e7c0;
 }
-.mode-explanation {
-    background: #6f9b7c;
-    border: 2px solid #c9e7c0;
+div[data-testid="stFileUploader"] {
+    background: #7ba883;
+    border: 2px dashed #c9e7c0;
     border-radius: 12px;
     padding: 15px;
-    margin-top: 15px;
-    color: #f1f8ee;
-    font-size: 15px;
-    text-align: justify;
-    box-shadow: 2px 2px 6px rgba(0,0,0,0.25);
+    text-align: center;
+    color: #f0f8ec !important;
 }
 .detect-result {
     background: #6f9b7c;
@@ -91,62 +113,62 @@ st.markdown("""
     font-weight: bold;
     text-align: center;
 }
-.return-button {
-    margin-top: 40px;
+.explanation-box {
+    background: #6f9b7c;
+    border: 2px solid #c9e7c0;
+    border-radius: 12px;
+    padding: 12px 18px;
+    color: #eaf4e2;
+    font-size: 15px;
+    margin-top: -5px;
+    margin-bottom: 20px;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
 }
 </style>
 """, unsafe_allow_html=True)
 
-
-# ====== Session state ======
+# ====== Session State ======
 if 'page' not in st.session_state:
     st.session_state['page'] = 'home'
-
 
 # ====== Halaman Awal ======
 def halaman_awal():
     st.markdown('<div class="welcome-box">SELAMAT DATANG DI DASHBOARD MUHAMMAD AKBAR DZIKRI</div>', unsafe_allow_html=True)
-    st.markdown("""
-    <div class="main-box">
-    KLASIFIKASI GAMBAR <br> & <br> OBJEK DETECTION
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown('<div class="main-box">KLASIFIKASI GAMBAR <br> & <br> DETEKSI OBJEK</div>', unsafe_allow_html=True)
 
     if st.button("HALAMAN BERIKUTNYA"):
         st.session_state['page'] = 'main'
-
 
 # ====== Halaman Utama ======
 def halaman_main():
     st.markdown('<div class="main-title">🧠 Deteksi dan Klasifikasi Gambar</div>', unsafe_allow_html=True)
     col1, col2 = st.columns([1, 2])
 
-    # Kolom kiri = Pilih Mode
+    # === Kolom Kiri ===
     with col1:
         st.markdown('<div class="section-title">⚙️ Pilih Mode</div>', unsafe_allow_html=True)
         mode = st.radio("Mode Analisis:", ["Deteksi Objek (YOLO)", "Klasifikasi Gambar"])
 
-        # Penjelasan dinamis
+        # 🔹 Kotak penjelasan dinamis
         if mode == "Deteksi Objek (YOLO)":
-            st.markdown("""
-            <div class="mode-explanation">
-            Mode ini menggunakan model <b>YOLO (You Only Look Once)</b> untuk mendeteksi berbagai objek dalam gambar.
-            Setiap objek akan diberi <b>bounding box hijau</b> lengkap dengan label dan tingkat kepercayaannya.
-            Cocok digunakan untuk menganalisis gambar yang memiliki lebih dari satu objek.
+            penjelasan = """
+            <div class="explanation-box">
+            Mode ini menggunakan model <b>YOLO</b> untuk mendeteksi objek dalam gambar.
+            Setiap objek akan diberi kotak hijau dan label nama serta tingkat kepercayaan deteksi.
             </div>
-            """, unsafe_allow_html=True)
+            """
         else:
-            st.markdown("""
-            <div class="mode-explanation">
-            Mode ini menjalankan proses <b>klasifikasi gambar</b> menggunakan model CNN (Convolutional Neural Network).
-            Gambar akan diubah menjadi ukuran 224x224 piksel, lalu diprediksi ke dalam salah satu kelas yang tersedia.
-            Mode ini berguna untuk mengenali jenis atau kategori dari satu gambar utama.
+            penjelasan = """
+            <div class="explanation-box">
+            Mode ini menggunakan <b>Model Klasifikasi CNN</b> untuk mengenali kategori gambar.
+            Gambar akan diklasifikasikan ke dalam salah satu kelas dengan tingkat akurasi tertentu.
             </div>
-            """, unsafe_allow_html=True)
+            """
+        st.markdown(penjelasan, unsafe_allow_html=True)
 
-    # Kolom kanan = Upload & hasil
+    # === Kolom Kanan ===
     with col2:
-        st.markdown('<div class="section-title">📤 Upload & Hasil Deteksi / Klasifikasi</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">📤 Upload & Hasil Analisis</div>', unsafe_allow_html=True)
         uploaded_file = st.file_uploader("Seret atau pilih gambar di sini 👇", type=["jpg", "jpeg", "png"])
 
         if uploaded_file is not None:
@@ -168,16 +190,15 @@ def halaman_main():
                                 (xmin, max(ymin - 10, 20)), cv2.FONT_HERSHEY_SIMPLEX,
                                 0.6, (0, 255, 0), 2, cv2.LINE_AA)
 
-                # tampilkan dua gambar berdampingan dan kecil
                 colA, colB = st.columns(2)
                 with colA:
-                    st.image(img, caption="🖼️ Gambar Asli", width=250)
+                    st.image(img, caption="🖼️ Gambar Asli", use_column_width=False, width=250)
                 with colB:
-                    st.image(img_with_boxes, caption="📦 Hasil Deteksi", width=250)
+                    st.image(img_with_boxes, caption="📦 Hasil Deteksi", use_column_width=False, width=250)
 
                 st.markdown('<div class="detect-result">✅ Deteksi objek berhasil dilakukan.</div>', unsafe_allow_html=True)
 
-            elif mode == "Klasifikasi Gambar":
+            else:
                 img_resized = img.resize((224, 224))
                 arr = image.img_to_array(img_resized)
                 arr = np.expand_dims(arr, axis=0) / 255.0
@@ -188,8 +209,7 @@ def halaman_main():
                 class_labels = ["Kelas 1", "Kelas 2", "Kelas 3", "Kelas 4", "Kelas 5"]
                 class_name = class_labels[class_index] if class_index < len(class_labels) else str(class_index)
 
-                # tampilkan gambar kecil
-                st.image(img, caption="🖼️ Gambar Diupload", width=250)
+                st.image(img, caption="🖼️ Gambar Diupload", use_column_width=False, width=250)
                 st.markdown(
                     f'<div class="detect-result">📊 <b>Hasil Prediksi:</b> {class_name}<br>🎯 <b>Akurasi:</b> {accuracy:.2f}%</div>',
                     unsafe_allow_html=True
@@ -197,13 +217,13 @@ def halaman_main():
         else:
             st.info("Silakan unggah gambar terlebih dahulu di atas.")
 
-    st.markdown('<div class="return-button"></div>', unsafe_allow_html=True)
-    if st.button("Kembali ke Halaman Awal"):
+    st.markdown("<br><br>", unsafe_allow_html=True)
+    if st.button("⬅️ Kembali ke Halaman Awal"):
         st.session_state['page'] = 'home'
 
 
 # ====== Routing ======
 if st.session_state['page'] == 'home':
     halaman_awal()
-elif st.session_state['page'] == 'main':
+else:
     halaman_main()
