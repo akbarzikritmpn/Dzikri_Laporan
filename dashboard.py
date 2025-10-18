@@ -167,21 +167,19 @@ def halaman_main():
         mode = st.radio("Mode Analisis:", ["Deteksi Objek (YOLO)", "Klasifikasi Gambar"])
         st.markdown('</div>', unsafe_allow_html=True)
 
-        # 🔹 Penjelasan dinamis tiap mode
         if mode == "Deteksi Objek (YOLO)":
             explanation = """
             <div class="explain-box">
             <b>Mode Deteksi Objek (YOLO):</b><br>
-            Pada mode ini, sistem akan mendeteksi dan memberikan kotak (bounding box) pada setiap objek yang teridentifikasi di dalam gambar, 
-            lengkap dengan label dan tingkat kepercayaannya.
+            Sistem mendeteksi setiap objek dalam gambar, memberikan label dan tingkat kepercayaan.
+            Selain itu, setiap objek yang terdeteksi juga diklasifikasikan menggunakan model klasifikasi tambahan.
             </div>
             """
         else:
             explanation = """
             <div class="explain-box">
             <b>Mode Klasifikasi Gambar:</b><br>
-            Mode ini digunakan untuk mengklasifikasikan keseluruhan gambar ke dalam salah satu kategori 
-            yang telah dilatih pada model. Hasilnya menunjukkan kelas dan akurasinya.
+            Mode ini mengklasifikasikan keseluruhan gambar ke dalam satu kelas tertentu berdasarkan model yang telah dilatih.
             </div>
             """
         st.markdown(explanation, unsafe_allow_html=True)
@@ -199,31 +197,53 @@ def halaman_main():
                 img_with_boxes = img_array.copy()
                 class_names = yolo_model.names
 
+                detected_objects = []
+
                 for box in results[0].boxes:
                     xmin, ymin, xmax, ymax = map(int, box.xyxy[0])
                     confidence = float(box.conf[0])
                     label_index = int(box.cls[0])
-                    label_name = class_names[label_index]
+                    yolo_label = class_names[label_index]
+
+                    # --- Crop objek untuk klasifikasi tambahan ---
+                    cropped_obj = img_array[ymin:ymax, xmin:xmax]
+                    cropped_obj_pil = Image.fromarray(cropped_obj).resize((224, 224))
+                    cropped_obj_array = image.img_to_array(cropped_obj_pil)
+                    cropped_obj_array = np.expand_dims(cropped_obj_array, axis=0) / 255.0
+
+                    # Prediksi kelas dari model klasifikasi
+                    class_pred = classifier.predict(cropped_obj_array)
+                    class_index = np.argmax(class_pred)
+                    accuracy = float(np.max(class_pred)) * 100
+                    class_labels = ["Kelas 1", "Kelas 2", "Kelas 3", "Kelas 4", "Kelas 5"]
+                    class_name = class_labels[class_index] if class_index < len(class_labels) else str(class_index)
+
+                    # Gambar bounding box
                     cv2.rectangle(img_with_boxes, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2)
-                    cv2.putText(img_with_boxes, f"{label_name} {confidence:.2f}",
+                    cv2.putText(img_with_boxes, f"{class_name} ({accuracy:.1f}%)",
                                 (xmin, max(ymin - 10, 20)), cv2.FONT_HERSHEY_SIMPLEX,
                                 0.6, (0, 255, 0), 2, cv2.LINE_AA)
+
+                    detected_objects.append((yolo_label, class_name, accuracy))
 
                 colA, colB = st.columns(2)
                 with colA:
                     st.image(img, caption="🖼️ Gambar Asli", use_container_width=False, width=300)
                 with colB:
-                    st.image(img_with_boxes, caption="📦 Hasil Deteksi", use_container_width=False, width=300)
+                    st.image(img_with_boxes, caption="📦 Deteksi & Klasifikasi Multi-Objek", use_container_width=False, width=300)
 
-                st.markdown('<div class="detect-result">✅ Deteksi objek berhasil dilakukan.</div>', unsafe_allow_html=True)
+                # Tampilkan hasil deteksi dan klasifikasi per objek
+                st.markdown('<div class="detect-result">✅ Semua objek berhasil dideteksi dan diklasifikasikan:</div>', unsafe_allow_html=True)
+                for i, (det_label, cls_label, acc) in enumerate(detected_objects):
+                    st.markdown(f"- **Objek {i+1}:** Deteksi YOLO = `{det_label}`, Klasifikasi = `{cls_label}`, Akurasi = `{acc:.2f}%`")
 
             elif mode == "Klasifikasi Gambar":
                 img_resized = img.resize((224, 224))
-                img_array = image.img_to_array(img_resized)
-                img_array = np.expand_dims(img_array, axis=0)
-                img_array = img_array / 255.0
+                img_array2 = image.img_to_array(img_resized)
+                img_array2 = np.expand_dims(img_array2, axis=0)
+                img_array2 = img_array2 / 255.0
 
-                prediction = classifier.predict(img_array)
+                prediction = classifier.predict(img_array2)
                 class_index = np.argmax(prediction)
                 accuracy = float(np.max(prediction)) * 100
 
@@ -242,7 +262,6 @@ def halaman_main():
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("Kembali ke Halaman Awal"):
         st.session_state['page'] = 'home'
-
 
 # ====== Routing Halaman ======
 if st.session_state['page'] == 'home':
