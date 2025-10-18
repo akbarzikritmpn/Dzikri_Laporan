@@ -18,10 +18,26 @@ yolo_model, classifier = load_models()
 # ====== CSS ======
 st.markdown("""
 <style>
+/* ==== Fullscreen Layout ==== */
 [data-testid="stAppViewContainer"] {
     background: linear-gradient(135deg, #d6edc7, #95bfa1);
     color: #2d4739;
     font-family: 'Arial', sans-serif;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+[data-testid="stHeader"] {
+    display: none;
+}
+[data-testid="stToolbar"] {
+    display: none;
+}
+.block-container {
+    padding-top: 0rem !important;
+    padding-bottom: 0rem !important;
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+    max-width: 100% !important;
 }
 
 /* ====== Kotak Hijau Judul Utama ====== */
@@ -34,8 +50,9 @@ st.markdown("""
     padding: 20px;
     font-size: 28px;
     font-weight: bold;
-    margin-bottom: 25px;
+    margin: 20px auto 25px auto;
     box-shadow: 4px 4px 8px rgba(0,0,0,0.25);
+    width: 100%;
 }
 
 /* ====== Kotak Pilih Mode & Upload ====== */
@@ -46,6 +63,7 @@ st.markdown("""
     padding: 25px;
     color: #d6edc7;
     box-shadow: 4px 4px 8px rgba(0,0,0,0.25);
+    width: 100%;
 }
 
 /* ====== Judul Kecil dalam Kotak ====== */
@@ -93,12 +111,14 @@ col1, col2 = st.columns([1, 2])
 
 # ---- Kolom Kiri: Pilih Mode ----
 with col1:
+    st.markdown('<div class="section-box">', unsafe_allow_html=True)
     st.markdown('<div class="section-title">⚙️ Pilih Mode</div>', unsafe_allow_html=True)
     mode = st.radio("Mode Analisis:", ["Deteksi Objek (YOLO)", "Klasifikasi Gambar"])
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ---- Kolom Kanan: Upload & Hasil ----
 with col2:
+    st.markdown('<div class="section-box">', unsafe_allow_html=True)
     st.markdown('<div class="section-title">📤 Upload & Hasil Deteksi / Klasifikasi</div>', unsafe_allow_html=True)
     uploaded_file = st.file_uploader("Seret atau pilih gambar di sini 👇", type=["jpg", "jpeg", "png"])
 
@@ -141,9 +161,8 @@ with col2:
             class_index = np.argmax(prediction)
             accuracy = float(np.max(prediction)) * 100
 
-            # ✅ Opsional: kalau kamu punya daftar nama kelas klasifikasi
-            # ganti bagian bawah ini:
-            class_labels = ["Kelas 1", "Kelas 2", "Kelas 3", "Kelas 4", "Kelas 5"]  # sesuaikan
+            # ✅ Sesuaikan nama kelas jika ada
+            class_labels = ["Kelas 1", "Kelas 2", "Kelas 3", "Kelas 4", "Kelas 5"]
             class_name = class_labels[class_index] if class_index < len(class_labels) else str(class_index)
 
             st.markdown(
