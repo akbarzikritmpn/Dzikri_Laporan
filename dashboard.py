@@ -131,12 +131,26 @@ div[data-testid="stFileUploader"] {
     font-weight: bold;
     text-align: center;
 }
+/* ===== Kotak Penjelasan Mode ===== */
+.mode-explanation {
+    background: #6f9b7c;
+    border: 2px solid #c9e7c0;
+    border-radius: 12px;
+    padding: 15px;
+    margin-top: 15px;
+    color: #f1f8ee;
+    font-size: 15px;
+    text-align: justify;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.25);
+}
 </style>
 """, unsafe_allow_html=True)
+
 
 # ====== Session state untuk halaman ======
 if 'page' not in st.session_state:
     st.session_state['page'] = 'home'
+
 
 # ====== Halaman Awal ======
 def halaman_awal():
@@ -150,16 +164,34 @@ def halaman_awal():
     if st.button("HALAMAN BERIKUTNYA"):
         st.session_state['page'] = 'main'
 
+
 # ====== Halaman Deteksi dan Klasifikasi ======
 def halaman_main():
     st.markdown('<div class="main-title">🧠 Deteksi dan Klasifikasi Gambar</div>', unsafe_allow_html=True)
-
     col1, col2 = st.columns([1, 2])
 
     with col1:
         st.markdown('<div class="section-title">⚙️ Pilih Mode</div>', unsafe_allow_html=True)
         mode = st.radio("Mode Analisis:", ["Deteksi Objek (YOLO)", "Klasifikasi Gambar"])
-        st.markdown('</div>', unsafe_allow_html=True)
+
+        # ✅ Tambahkan kotak penjelasan yang berubah sesuai mode
+        if mode == "Deteksi Objek (YOLO)":
+            penjelasan = """
+            <div class="mode-explanation">
+            Mode ini menggunakan model <b>YOLO (You Only Look Once)</b> untuk mendeteksi berbagai objek dalam gambar.
+            Setiap objek akan diberi <b>bounding box hijau</b> lengkap dengan label dan tingkat kepercayaannya.
+            Cocok digunakan untuk menganalisis gambar yang memiliki lebih dari satu objek.
+            </div>
+            """
+        else:
+            penjelasan = """
+            <div class="mode-explanation">
+            Mode ini menjalankan proses <b>klasifikasi gambar</b> menggunakan model CNN (Convolutional Neural Network).
+            Gambar akan diubah menjadi ukuran 224x224 piksel, lalu diprediksi ke dalam salah satu kelas yang tersedia.
+            Mode ini berguna untuk mengenali jenis atau kategori dari satu gambar utama.
+            </div>
+            """
+        st.markdown(penjelasan, unsafe_allow_html=True)
 
     with col2:
         st.markdown('<div class="section-title">📤 Upload & Hasil Deteksi / Klasifikasi</div>', unsafe_allow_html=True)
@@ -173,7 +205,6 @@ def halaman_main():
                 img_array = np.array(img)
                 results = yolo_model(img_array)
                 img_with_boxes = img_array.copy()
-
                 class_names = yolo_model.names
 
                 for box in results[0].boxes:
@@ -181,7 +212,6 @@ def halaman_main():
                     confidence = float(box.conf[0])
                     label_index = int(box.cls[0])
                     label_name = class_names[label_index]
-
                     cv2.rectangle(img_with_boxes, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2)
                     cv2.putText(img_with_boxes, f"{label_name} {confidence:.2f}",
                                 (xmin, max(ymin - 10, 20)), cv2.FONT_HERSHEY_SIMPLEX,
@@ -193,23 +223,19 @@ def halaman_main():
             elif mode == "Klasifikasi Gambar":
                 img_resized = img.resize((224, 224))
                 img_array = image.img_to_array(img_resized)
-                img_array = np.expand_dims(img_array, axis=0)
-                img_array = img_array / 255.0
-
+                img_array = np.expand_dims(img_array, axis=0) / 255.0
                 prediction = classifier.predict(img_array)
                 class_index = np.argmax(prediction)
                 accuracy = float(np.max(prediction)) * 100
 
                 class_labels = ["Kelas 1", "Kelas 2", "Kelas 3", "Kelas 4", "Kelas 5"]
                 class_name = class_labels[class_index] if class_index < len(class_labels) else str(class_index)
-
                 st.markdown(
                     f'<div class="detect-result">📊 <b>Hasil Prediksi:</b> {class_name}<br>🎯 <b>Akurasi:</b> {accuracy:.2f}%</div>',
                     unsafe_allow_html=True
                 )
         else:
             st.info("Silakan unggah gambar terlebih dahulu di atas.")
-        st.markdown('</div>', unsafe_allow_html=True)
 
     if st.button("Kembali ke Halaman Awal"):
         st.session_state['page'] = 'home'
