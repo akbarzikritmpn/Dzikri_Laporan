@@ -18,20 +18,61 @@ yolo_model, classifier = load_models()
 # ====== CSS ======
 st.markdown("""
 <style>
-/* ==== Fullscreen Layout ==== */
+/* ===== Background umum ===== */
 [data-testid="stAppViewContainer"] {
-    background: linear-gradient(135deg, #d6edc7, #95bfa1);
-    color: #2d4739;
+    background: linear-gradient(135deg, #a3cbb8, #6a9080);
+    color: #cadfc7;
     font-family: 'Arial', sans-serif;
-    padding: 0 !important;
-    margin: 0 !important;
+    padding: 2rem 3rem;
+    margin: 0;
 }
-[data-testid="stHeader"] {
-    display: none;
+[data-testid="stHeader"] { display: none; }
+[data-testid="stToolbar"] { display: none; }
+
+/* ===== Halaman Awal ===== */
+.welcome-box {
+    background: linear-gradient(145deg, #57876a, #9dbcae);
+    border-radius: 12px;
+    padding: 15px 20px;
+    margin-bottom: 25px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 18px;
+    border: 1.5px solid #c9e7c0;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
 }
-[data-testid="stToolbar"] {
-    display: none;
+.main-box {
+    background: linear-gradient(145deg, #8daaa5, #618472);
+    border-radius: 15px;
+    padding: 40px 25px;
+    margin-bottom: 25px;
+    font-weight: bold;
+    font-size: 28px;
+    text-align: center;
+    border: 2px solid #c9e7c0;
+    box-shadow: 4px 4px 10px rgba(0,0,0,0.3);
+    line-height: 1.3;
 }
+.button-box {
+    background: linear-gradient(145deg, #7e9c7d, #55775b);
+    border-radius: 12px;
+    padding: 10px 25px;
+    width: 160px;
+    margin: 0 auto;
+    text-align: center;
+    font-weight: bold;
+    color: #cadfc7;
+    cursor: pointer;
+    border: 1.5px solid #c9e7c0;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+    user-select: none;
+    transition: background 0.3s ease;
+}
+.button-box:hover {
+    background: linear-gradient(145deg, #55775b, #7e9c7d);
+}
+
+/* ===== Halaman Deteksi dan Klasifikasi ===== */
 .block-container {
     padding-top: 0rem !important;
     padding-bottom: 0rem !important;
@@ -39,58 +80,19 @@ st.markdown("""
     padding-right: 2rem !important;
     max-width: 100% !important;
 }
-
-/* ====== Halaman Awal CSS ====== */
-.welcome-box {
-    background: linear-gradient(145deg, #57876a, #9dbcae);
-    border-radius: 12px;
-    padding: 20px 30px;
-    margin-bottom: 30px;
+.main-title {
+    background: linear-gradient(145deg, #6b9474, #547a64);
+    border: 3px solid #c9e7c0;
+    border-radius: 20px;
+    color: #eaf4e2;
     text-align: center;
+    padding: 20px;
+    font-size: 28px;
     font-weight: bold;
-    font-size: 22px;
-    border: 1.5px solid #c9e7c0;
-    box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+    margin: 20px auto 25px auto;
+    box-shadow: 4px 4px 8px rgba(0,0,0,0.25);
     width: 100%;
-    max-width: 100vw;
-    box-sizing: border-box;
 }
-
-.main-box {
-    background: linear-gradient(145deg, #8daaa5, #618472);
-    border-radius: 15px;
-    padding: 70px 40px;
-    margin-bottom: 40px;
-    font-weight: bold;
-    font-size: 34px;
-    text-align: center;
-    border: 2px solid #c9e7c0;
-    box-shadow: 4px 4px 12px rgba(0,0,0,0.3);
-    line-height: 1.4;
-    width: 100%;
-    max-width: 100vw;
-    box-sizing: border-box;
-}
-
-/* Tombol halaman awal */
-.stButton > button {
-    width: 180px;
-    height: 45px;
-    font-weight: bold;
-    font-size: 14px;
-    color: #fff;
-    background-color: #547a64;
-    border-radius: 12px;
-    border: 1.5px solid #c9e7c0;
-    box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-.stButton > button:hover {
-    background-color: #7ba883;
-}
-
-/* ====== Kotak Pilih Mode & Upload ====== */
 .section-box {
     background: linear-gradient(145deg, #7ba883, #547a64);
     border-radius: 20px;
@@ -100,8 +102,6 @@ st.markdown("""
     box-shadow: 4px 4px 8px rgba(0,0,0,0.25);
     width: 100%;
 }
-
-/* ====== Judul Kecil dalam Kotak ====== */
 .section-title {
     font-size: 22px;
     font-weight: bold;
@@ -113,8 +113,6 @@ st.markdown("""
     text-align: center;
     border: 2px solid #c9e7c0;
 }
-
-/* ====== Upload Box ====== */
 div[data-testid="stFileUploader"] {
     background: #7ba883;
     border: 2px dashed #c9e7c0;
@@ -123,8 +121,6 @@ div[data-testid="stFileUploader"] {
     text-align: center;
     color: #f0f8ec !important;
 }
-
-/* ====== Hasil Deteksi/Klasifikasi ====== */
 .detect-result {
     background: #6f9b7c;
     border: 2px solid #c9e7c0;
@@ -138,6 +134,10 @@ div[data-testid="stFileUploader"] {
 </style>
 """, unsafe_allow_html=True)
 
+# ====== Session state untuk halaman ======
+if 'page' not in st.session_state:
+    st.session_state['page'] = 'home'
+
 # ====== Halaman Awal ======
 def halaman_awal():
     st.markdown('<div class="welcome-box">SELAMAT DATANG DI DASHBOARD MUHAMMAD AKBAR DZIKRI</div>', unsafe_allow_html=True)
@@ -150,8 +150,8 @@ def halaman_awal():
     if st.button("HALAMAN BERIKUTNYA"):
         st.session_state['page'] = 'main'
 
-# ====== Halaman Utama (Kode yang kamu punya) ======
-def halaman_utama():
+# ====== Halaman Deteksi dan Klasifikasi ======
+def halaman_main():
     st.markdown('<div class="main-title">🧠 Deteksi dan Klasifikasi Gambar</div>', unsafe_allow_html=True)
 
     col1, col2 = st.columns([1, 2])
@@ -173,6 +173,7 @@ def halaman_utama():
                 img_array = np.array(img)
                 results = yolo_model(img_array)
                 img_with_boxes = img_array.copy()
+
                 class_names = yolo_model.names
 
                 for box in results[0].boxes:
@@ -210,11 +211,12 @@ def halaman_utama():
             st.info("Silakan unggah gambar terlebih dahulu di atas.")
         st.markdown('</div>', unsafe_allow_html=True)
 
-# ====== Main Program ======
-if 'page' not in st.session_state:
-    st.session_state['page'] = 'home'
+    if st.button("Kembali ke Halaman Awal"):
+        st.session_state['page'] = 'home'
 
+
+# ====== Routing Halaman ======
 if st.session_state['page'] == 'home':
     halaman_awal()
 elif st.session_state['page'] == 'main':
-    halaman_utama()
+    halaman_main()
