@@ -5,7 +5,6 @@ from tensorflow.keras.preprocessing import image
 import numpy as np
 from PIL import Image
 import cv2
-import matplotlib.pyplot as plt
 
 # ====== Load Model ======
 @st.cache_resource
@@ -24,6 +23,7 @@ st.markdown("""
     color: #cadfc7;
     font-family: 'Arial', sans-serif;
     padding: 2rem 3rem;
+    margin: 0;
 }
 [data-testid="stHeader"] { display: none; }
 [data-testid="stToolbar"] { display: none; }
@@ -51,6 +51,53 @@ st.markdown("""
     box-shadow: 4px 4px 10px rgba(0,0,0,0.3);
     line-height: 1.3;
 }
+.button-box {
+    background: linear-gradient(145deg, #7e9c7d, #55775b);
+    border-radius: 12px;
+    padding: 10px 25px;
+    width: 160px;
+    margin: 0 auto;
+    text-align: center;
+    font-weight: bold;
+    color: #cadfc7;
+    cursor: pointer;
+    border: 1.5px solid #c9e7c0;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+    user-select: none;
+    transition: background 0.3s ease;
+}
+.button-box:hover {
+    background: linear-gradient(145deg, #55775b, #7e9c7d);
+}
+.block-container {
+    padding-top: 0rem !important;
+    padding-bottom: 0rem !important;
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+    max-width: 100% !important;
+}
+.main-title {
+    background: linear-gradient(145deg, #6b9474, #547a64);
+    border: 3px solid #c9e7c0;
+    border-radius: 20px;
+    color: #eaf4e2;
+    text-align: center;
+    padding: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    margin: 20px auto 25px auto;
+    box-shadow: 4px 4px 8px rgba(0,0,0,0.25);
+    width: 100%;
+}
+.section-box {
+    background: linear-gradient(145deg, #7ba883, #547a64);
+    border-radius: 20px;
+    border: 2px solid #c9e7c0;
+    padding: 25px;
+    color: #d6edc7;
+    box-shadow: 4px 4px 8px rgba(0,0,0,0.25);
+    width: 100%;
+}
 .section-title {
     font-size: 22px;
     font-weight: bold;
@@ -62,15 +109,13 @@ st.markdown("""
     text-align: center;
     border: 2px solid #c9e7c0;
 }
-.explain-box {
+div[data-testid="stFileUploader"] {
     background: #7ba883;
-    border: 2px solid #c9e7c0;
-    border-radius: 10px;
+    border: 2px dashed #c9e7c0;
+    border-radius: 12px;
     padding: 15px;
-    color: #eaf4e2;
-    margin-top: 10px;
-    font-weight: 500;
-    text-align: justify;
+    text-align: center;
+    color: #f0f8ec !important;
 }
 .detect-result {
     background: #6f9b7c;
@@ -82,10 +127,20 @@ st.markdown("""
     font-weight: bold;
     text-align: center;
 }
+.explain-box {
+    background: #7ba883;
+    border: 2px solid #c9e7c0;
+    border-radius: 10px;
+    padding: 15px;
+    color: #eaf4e2;
+    margin-top: 10px;
+    font-weight: 500;
+    text-align: justify;
+}
 </style>
 """, unsafe_allow_html=True)
 
-# ====== Session State ======
+# ====== Session state ======
 if 'page' not in st.session_state:
     st.session_state['page'] = 'home'
 
@@ -103,28 +158,30 @@ def halaman_awal():
 
 # ====== Halaman Utama ======
 def halaman_main():
-    st.markdown('<div class="main-box">🧠 Deteksi dan Klasifikasi Gambar</div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-title">🧠 Deteksi dan Klasifikasi Gambar</div>', unsafe_allow_html=True)
 
     col1, col2 = st.columns([1, 2])
 
     with col1:
         st.markdown('<div class="section-title">⚙️ Pilih Mode</div>', unsafe_allow_html=True)
         mode = st.radio("Mode Analisis:", ["Deteksi Objek (YOLO)", "Klasifikasi Gambar"])
+        st.markdown('</div>', unsafe_allow_html=True)
 
+        # 🔹 Penjelasan dinamis tiap mode
         if mode == "Deteksi Objek (YOLO)":
             explanation = """
             <div class="explain-box">
             <b>Mode Deteksi Objek (YOLO):</b><br>
-            Sistem akan mendeteksi dan memberi kotak (bounding box) pada objek di gambar 
-            beserta label dan tingkat kepercayaannya.
+            Pada mode ini, sistem akan mendeteksi dan memberikan kotak (bounding box) pada setiap objek yang teridentifikasi di dalam gambar, 
+            lengkap dengan label dan tingkat kepercayaannya.
             </div>
             """
         else:
             explanation = """
             <div class="explain-box">
             <b>Mode Klasifikasi Gambar:</b><br>
-            Sistem akan mengklasifikasikan keseluruhan gambar ke dalam kategori tertentu 
-            dan menampilkan grafik probabilitas tiap kelas.
+            Mode ini digunakan untuk mengklasifikasikan keseluruhan gambar ke dalam salah satu kategori 
+            yang telah dilatih pada model. Hasilnya menunjukkan kelas dan akurasinya.
             </div>
             """
         st.markdown(explanation, unsafe_allow_html=True)
@@ -166,35 +223,26 @@ def halaman_main():
                 img_array = np.expand_dims(img_array, axis=0)
                 img_array = img_array / 255.0
 
-                prediction = classifier.predict(img_array)[0]
+                prediction = classifier.predict(img_array)
                 class_index = np.argmax(prediction)
                 accuracy = float(np.max(prediction)) * 100
 
                 class_labels = ["Kelas 1", "Kelas 2", "Kelas 3", "Kelas 4", "Kelas 5"]
                 class_name = class_labels[class_index] if class_index < len(class_labels) else str(class_index)
 
-                colG1, colG2 = st.columns([1, 1])
-                with colG1:
-                    st.image(img, caption="🖼️ Gambar Diupload", use_container_width=False, width=300)
-
-                with colG2:
-                    fig, ax = plt.subplots(figsize=(4, 3))
-                    ax.bar(class_labels, prediction * 100)
-                    ax.set_ylabel('Persentase (%)')
-                    ax.set_title('Grafik Probabilitas Tiap Kelas')
-                    plt.xticks(rotation=30)
-                    st.pyplot(fig)
-
+                st.image(img, caption="🖼️ Gambar Diupload", use_container_width=False, width=300)
                 st.markdown(
-                    f'<div class="detect-result">📊 <b>Prediksi:</b> {class_name}<br>🎯 <b>Akurasi:</b> {accuracy:.2f}%</div>',
+                    f'<div class="detect-result">📊 <b>Hasil Prediksi:</b> {class_name}<br>🎯 <b>Akurasi:</b> {accuracy:.2f}%</div>',
                     unsafe_allow_html=True
                 )
         else:
             st.info("Silakan unggah gambar terlebih dahulu di atas.")
+        st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("Kembali ke Halaman Awal"):
         st.session_state['page'] = 'home'
+
 
 # ====== Routing Halaman ======
 if st.session_state['page'] == 'home':
