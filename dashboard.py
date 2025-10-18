@@ -211,9 +211,9 @@ def halaman_main():
 
                 colA, colB = st.columns(2)
                 with colA:
-                    st.image(img, caption="🖼️ Gambar Asli", use_column_width=False, width=300)
+                    st.image(img, caption="🖼️ Gambar Asli", use_container_width=False, width=300)
                 with colB:
-                    st.image(img_with_boxes, caption="📦 Hasil Deteksi", use_column_width=False, width=300)
+                    st.image(img_with_boxes, caption="📦 Hasil Deteksi", use_container_width=False, width=300)
 
                 st.markdown('<div class="detect-result">✅ Deteksi objek berhasil dilakukan.</div>', unsafe_allow_html=True)
 
@@ -230,7 +230,7 @@ def halaman_main():
                 class_labels = ["Kelas 1", "Kelas 2", "Kelas 3", "Kelas 4", "Kelas 5"]
                 class_name = class_labels[class_index] if class_index < len(class_labels) else str(class_index)
 
-                st.image(img, caption="🖼️ Gambar Diupload", use_column_width=False, width=300)
+                st.image(img, caption="🖼️ Gambar Diupload", use_container_width=False, width=300)
                 st.markdown(
                     f'<div class="detect-result">📊 <b>Hasil Prediksi:</b> {class_name}<br>🎯 <b>Akurasi:</b> {accuracy:.2f}%</div>',
                     unsafe_allow_html=True
