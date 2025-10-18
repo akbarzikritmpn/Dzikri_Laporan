@@ -30,6 +30,25 @@ st.markdown("""
 [data-testid="stToolbar"] { display: none; }
 
 /* ===== Halaman Awal ===== */
+.home-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+}
+.rose-img {
+    width: 180px;
+    height: auto;
+    filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.3));
+    transition: transform 0.4s ease;
+}
+.rose-img:hover {
+    transform: scale(1.05);
+}
+.center-content {
+    flex: 1;
+    text-align: center;
+}
 .welcome-box {
     background: linear-gradient(145deg, #57876a, #9dbcae);
     border-radius: 12px;
@@ -57,7 +76,7 @@ st.markdown("""
     background: linear-gradient(145deg, #7e9c7d, #55775b);
     border-radius: 12px;
     padding: 10px 25px;
-    width: 160px;
+    width: 180px;
     margin: 0 auto;
     text-align: center;
     font-weight: bold;
@@ -66,10 +85,11 @@ st.markdown("""
     border: 1.5px solid #c9e7c0;
     box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
     user-select: none;
-    transition: background 0.3s ease;
+    transition: background 0.3s ease, transform 0.2s ease;
 }
 .button-box:hover {
     background: linear-gradient(145deg, #55775b, #7e9c7d);
+    transform: scale(1.05);
 }
 
 /* ===== Halaman Deteksi dan Klasifikasi ===== */
@@ -134,21 +154,31 @@ div[data-testid="stFileUploader"] {
 </style>
 """, unsafe_allow_html=True)
 
+
 # ====== Session state untuk halaman ======
 if 'page' not in st.session_state:
     st.session_state['page'] = 'home'
 
+
 # ====== Halaman Awal ======
 def halaman_awal():
-    st.markdown('<div class="welcome-box">SELAMAT DATANG DI DASHBOARD MUHAMMAD AKBAR DZIKRI</div>', unsafe_allow_html=True)
     st.markdown("""
-    <div class="main-box">
-    KLASIFIKASI GAMBAR <br> & <br> OBJEK DETECTION
+    <div class="home-container">
+        <img src="https://cdn.pixabay.com/photo/2015/04/19/08/33/rose-729509_1280.jpg" class="rose-img">
+        <div class="center-content">
+            <div class="welcome-box">🌸 SELAMAT DATANG DI DASHBOARD MUHAMMAD AKBAR DZIKRI 🌸</div>
+            <div class="main-box">
+                KLASIFIKASI GAMBAR <br> & <br> OBJEK DETECTION
+            </div>
+        </div>
+        <img src="https://cdn.pixabay.com/photo/2013/07/21/13/00/rose-165819_1280.jpg" class="rose-img">
     </div>
     """, unsafe_allow_html=True)
 
-    if st.button("HALAMAN BERIKUTNYA"):
+    st.markdown('<div class="button-box">👉 HALAMAN BERIKUTNYA 👈</div>', unsafe_allow_html=True)
+    if st.button(" "):  # tombol dummy biar bisa pindah
         st.session_state['page'] = 'main'
+
 
 # ====== Halaman Deteksi dan Klasifikasi ======
 def halaman_main():
@@ -175,7 +205,6 @@ def halaman_main():
                 img_with_boxes = img_array.copy()
 
                 class_names = yolo_model.names
-
                 for box in results[0].boxes:
                     xmin, ymin, xmax, ymax = map(int, box.xyxy[0])
                     confidence = float(box.conf[0])
