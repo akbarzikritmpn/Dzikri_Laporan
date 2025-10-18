@@ -5,7 +5,7 @@ from tensorflow.keras.preprocessing import image
 import numpy as np
 from PIL import Image
 import cv2
-import plotly.graph_objects as go
+import matplotlib.pyplot as plt
 
 # ====== Load Model ======
 @st.cache_resource
@@ -123,8 +123,8 @@ def halaman_main():
             explanation = """
             <div class="explain-box">
             <b>Mode Klasifikasi Gambar:</b><br>
-            Sistem akan mengklasifikasikan gambar ke dalam kategori tertentu 
-            dan menampilkan grafik interaktif probabilitas tiap kelas.
+            Sistem akan mengklasifikasikan keseluruhan gambar ke dalam kategori tertentu 
+            dan menampilkan grafik probabilitas tiap kelas.
             </div>
             """
         st.markdown(explanation, unsafe_allow_html=True)
@@ -154,9 +154,9 @@ def halaman_main():
 
                 colA, colB = st.columns(2)
                 with colA:
-                    st.image(img, caption="🖼️ Gambar Asli", width=300)
+                    st.image(img, caption="🖼️ Gambar Asli", use_container_width=False, width=300)
                 with colB:
-                    st.image(img_with_boxes, caption="📦 Hasil Deteksi", width=300)
+                    st.image(img_with_boxes, caption="📦 Hasil Deteksi", use_container_width=False, width=300)
 
                 st.markdown('<div class="detect-result">✅ Deteksi objek berhasil dilakukan.</div>', unsafe_allow_html=True)
 
@@ -175,29 +175,15 @@ def halaman_main():
 
                 colG1, colG2 = st.columns([1, 1])
                 with colG1:
-                    st.image(img, caption="🖼️ Gambar Diupload", width=300)
+                    st.image(img, caption="🖼️ Gambar Diupload", use_container_width=False, width=300)
 
                 with colG2:
-                    fig = go.Figure(
-                        data=[go.Bar(
-                            x=class_labels,
-                            y=prediction * 100,
-                            text=[f"{p*100:.2f}%" for p in prediction],
-                            textposition='outside',
-                            marker=dict(color=['#a8d5ba', '#91c8a8', '#7bb895', '#6aa784', '#5a9472'])
-                        )]
-                    )
-                    fig.update_layout(
-                        title="📊 Visualisasi Probabilitas Tiap Kelas",
-                        yaxis_title="Persentase (%)",
-                        xaxis_title="Kelas",
-                        plot_bgcolor="rgba(0,0,0,0)",
-                        paper_bgcolor="rgba(0,0,0,0)",
-                        font=dict(color="#eaf4e2", size=13),
-                        margin=dict(t=60, b=30, l=30, r=30),
-                        transition_duration=700
-                    )
-                    st.plotly_chart(fig, use_container_width=True)
+                    fig, ax = plt.subplots(figsize=(4, 3))
+                    ax.bar(class_labels, prediction * 100)
+                    ax.set_ylabel('Persentase (%)')
+                    ax.set_title('Grafik Probabilitas Tiap Kelas')
+                    plt.xticks(rotation=30)
+                    st.pyplot(fig)
 
                 st.markdown(
                     f'<div class="detect-result">📊 <b>Prediksi:</b> {class_name}<br>🎯 <b>Akurasi:</b> {accuracy:.2f}%</div>',
@@ -209,7 +195,6 @@ def halaman_main():
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("Kembali ke Halaman Awal"):
         st.session_state['page'] = 'home'
-
 
 # ====== Routing Halaman ======
 if st.session_state['page'] == 'home':
