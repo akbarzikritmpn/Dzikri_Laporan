@@ -155,10 +155,10 @@ if 'page' not in st.session_state:
 
 # ====== Halaman Awal ======
 def halaman_awal():
-    st.markdown('<div class="welcome-box">SELAMAT DATANG DI DASHBOARD MUHAMMAD AKBAR DZIKRI</div>', unsafe_allow_html=True)
+    st.markdown('<div class="welcome-box">🌸 SELAMAT DATANG DI DASHBOARD MUHAMMAD AKBAR DZIKRI 🌸</div>', unsafe_allow_html=True)
     st.markdown("""
     <div class="main-box">
-        KLASIFIKASI GAMBAR <br> & <br> OBJEK DETECTION
+        KLASIFIKASI GAMBAR <br> & <br> DETEKSI OBJEK
     </div>
     """, unsafe_allow_html=True)
     if st.button("HALAMAN BERIKUTNYA"):
@@ -228,9 +228,17 @@ def halaman_main():
                 with col_yolo2:
                     st.image(img_with_boxes, caption="📦 Hasil Deteksi & Klasifikasi", use_container_width=True)
 
-                st.markdown('<div class="detect-result">✅ Hasil Deteksi dan Klasifikasi:</div>', unsafe_allow_html=True)
+                # ======== Hasil Deteksi Dalam Kotak ========
+                st.markdown('<div class="detect-result">✅ <b>Hasil Deteksi dan Klasifikasi:</b></div>', unsafe_allow_html=True)
                 for i, (det, cls, acc) in enumerate(detected_objects):
-                    st.markdown(f"- **Objek {i+1}:** Deteksi = {det}, Klasifikasi = {cls}, Akurasi = {acc:.2f}%")
+                    st.markdown(f"""
+                    <div class="detect-result">
+                        🌼 <b>Objek {i+1}</b><br>
+                        🔍 <b>Deteksi:</b> {det}<br>
+                        📊 <b>Klasifikasi:</b> {cls}<br>
+                        🎯 <b>Akurasi:</b> {acc:.2f}%
+                    </div>
+                    """, unsafe_allow_html=True)
 
         # ====== MODE KLASIFIKASI ======
         elif mode == "Klasifikasi Gambar":
@@ -258,7 +266,6 @@ def halaman_main():
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("Kembali ke Halaman Awal"):
         st.session_state['page'] = 'home'
-
 
 # ====== Routing Halaman ======
 if st.session_state['page'] == 'home':
