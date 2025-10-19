@@ -156,7 +156,7 @@ def halaman_main():
     col1, col2 = st.columns(2)
 
     with col1:
-        st.markdown('<div class="section-title">⚙️ Pilih Mode</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">⚙️ Pilih Mode yang digunakan</div>', unsafe_allow_html=True)
         mode = st.radio("Mode Analisis:", ["Deteksi Objek (YOLO)", "Klasifikasi Gambar"])
         if mode == "Deteksi Objek (YOLO)":
             st.markdown("""
@@ -174,7 +174,7 @@ def halaman_main():
             """, unsafe_allow_html=True)
 
     with col2:
-        st.markdown('<div class="section-title">📤 Upload Gambar Sesuai Mode</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">📤 Upload Gambar</div>', unsafe_allow_html=True)
 
         # ====== MODE YOLO ======
         if mode == "Deteksi Objek (YOLO)":
