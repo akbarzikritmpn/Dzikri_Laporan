@@ -100,6 +100,13 @@ def halaman_awal():
         </div>
     """, unsafe_allow_html=True)
 
+
+    st.markdown("""
+        <div class="section-title">
+             <b>Penjelasan Awak Sebelum Menuju Dashboard</b> 
+        </div>
+    """, unsafe_allow_html=True)
+
     st.write("")
     col1, col2 = st.columns(2)
 
