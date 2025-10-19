@@ -155,42 +155,41 @@ if 'page' not in st.session_state:
 
 # ====== Halaman Awal ======
 def halaman_awal():
-    st.markdown('<div class="welcome-box">SELAMAT DATANG DI DASHBOARD MUHAMMAD AKBAR DZIKRI</div>', unsafe_allow_html=True)
+    st.markdown('<div class="welcome-box">🌸 SELAMAT DATANG DI DASHBOARD MUHAMMAD AKBAR DZIKRI 🌸</div>', unsafe_allow_html=True)
     st.markdown("""
     <div class="main-box">
-        KLASIFIKASI GAMBAR <br> & <br> OBJEK DETECTION
+        🌼 DETEKSI OBJEK (YOLO) <br> & <br> 🌻 KLASIFIKASI GAMBAR
     </div>
     """, unsafe_allow_html=True)
-    if st.button("HALAMAN BERIKUTNYA"):
+    if st.button("➡️ HALAMAN BERIKUTNYA"):
         st.session_state['page'] = 'main'
 
 # ====== Halaman Utama ======
 def halaman_main():
-    st.markdown('<div class="main-title">🧠 Deteksi dan Klasifikasi Gambar</div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-title">🧠 Deteksi dan Klasifikasi Gambar Bunga 🌸</div>', unsafe_allow_html=True)
     col1, col2 = st.columns(2)
 
     with col1:
-        st.markdown('<div class="section-title">⚙️ Pilih Mode</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">⚙️ Pilih Mode Analisis</div>', unsafe_allow_html=True)
         mode = st.radio("Mode Analisis:", ["Deteksi Objek (YOLO)", "Klasifikasi Gambar"])
-        st.markdown('</div>', unsafe_allow_html=True)
 
         if mode == "Deteksi Objek (YOLO)":
             st.markdown("""
             <div class="explain-box">
                 <b>Mode Deteksi Objek (YOLO):</b><br>
-                Sistem akan mendeteksi setiap objek di gambar, memberi label, dan klasifikasi tambahan.
+                Sistem akan mendeteksi setiap objek di gambar, memberi label, dan menampilkan hasil klasifikasi di dalam kotak hijau.
             </div>
             """, unsafe_allow_html=True)
         else:
             st.markdown("""
             <div class="explain-box">
                 <b>Mode Klasifikasi Gambar:</b><br>
-                Sistem akan menentukan kelas keseluruhan gambar menggunakan model klasifikasi.
+                Sistem akan menentukan kelas keseluruhan gambar menggunakan model klasifikasi CNN.
             </div>
             """, unsafe_allow_html=True)
 
     with col2:
-        st.markdown('<div class="section-title">📤 Upload Gambar Sesuai Mode</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">📤 Upload Gambar</div>', unsafe_allow_html=True)
 
         # ====== MODE YOLO ======
         if mode == "Deteksi Objek (YOLO)":
@@ -207,6 +206,8 @@ def halaman_main():
                     xmin, ymin, xmax, ymax = map(int, box.xyxy[0])
                     label_index = int(box.cls[0])
                     yolo_label = class_names[label_index]
+
+                    # Potong objek untuk klasifikasi CNN
                     cropped_obj = img_array[ymin:ymax, xmin:xmax]
                     cropped_pil = Image.fromarray(cropped_obj).resize((224, 224))
                     cropped_arr = image.img_to_array(cropped_pil)
@@ -214,14 +215,31 @@ def halaman_main():
                     pred = classifier.predict(cropped_arr)
                     idx = np.argmax(pred)
                     acc = float(np.max(pred)) * 100
-                    labels = ["Kelas 1 (Daisy)", "Kelas 2 (Dandelion)", "Kelas 3 (Rose)", "Kelas 4 (Sunflower)", "Kelas 5 (Tulip)"]
+
+                    labels = [
+                        "Kelas 1 (Daisy)",
+                        "Kelas 2 (Dandelion)",
+                        "Kelas 3 (Rose)",
+                        "Kelas 4 (Sunflower)",
+                        "Kelas 5 (Tulip)"
+                    ]
                     class_name = labels[idx] if idx < len(labels) else str(idx)
-                    cv2.rectangle(img_with_boxes, (xmin, ymin), (xmax, ymax), (0,255,0), 2)
-                    cv2.putText(img_with_boxes, f"{class_name} ({acc:.1f}%)", (xmin, max(ymin - 10, 20)),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,255,0), 2, cv2.LINE_AA)
+
+                    # ====== Kotak Hijau ======
+                    cv2.rectangle(img_with_boxes, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2)
+
+                    # ====== Teks di Dalam Kotak ======
+                    text_y = ymin + 20
+                    cv2.putText(img_with_boxes, f"Deteksi: {yolo_label}", (xmin + 5, text_y),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                    cv2.putText(img_with_boxes, f"Klasifikasi: {class_name}", (xmin + 5, text_y + 20),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                    cv2.putText(img_with_boxes, f"Akurasi: {acc:.2f}%", (xmin + 5, text_y + 40),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+
                     detected_objects.append((yolo_label, class_name, acc))
 
-                # ======== Gambar Bersampingan ========
+                # ====== Tampilkan Gambar ======
                 col_yolo1, col_yolo2 = st.columns([1, 1], gap="large")
                 with col_yolo1:
                     st.image(img, caption="🖼️ Gambar Asli", use_container_width=True)
@@ -230,9 +248,9 @@ def halaman_main():
 
                 st.markdown('<div class="detect-result">✅ Hasil Deteksi dan Klasifikasi:</div>', unsafe_allow_html=True)
                 for i, (det, cls, acc) in enumerate(detected_objects):
-                    st.markdown(f"- **Objek {i+1}:** Deteksi = {det}, Klasifikasi = {cls}, Akurasi = {acc:.2f}%")
+                    st.markdown(f"- 🌿 **Objek {i+1}:** Deteksi = {det}, Klasifikasi = {cls}, Akurasi = {acc:.2f}%")
 
-        # ====== MODE KLASIFIKASI ======
+        # ====== MODE KLASIFIKASI GAMBAR ======
         elif mode == "Klasifikasi Gambar":
             uploaded_class = st.file_uploader("Unggah gambar untuk Klasifikasi 👇", type=["jpg", "jpeg", "png"], key="classify")
             if uploaded_class is not None:
@@ -243,20 +261,23 @@ def halaman_main():
                 pred = classifier.predict(arr)
                 idx = np.argmax(pred)
                 acc = float(np.max(pred)) * 100
-                labels = ["Kelas 1 (Daisy)", "Kelas 2 (Dandelion)", "Kelas 3 (Rose)", "Kelas 4 (Sunflower)", "Kelas 5 (Tulip)"]
+                labels = [
+                    "Kelas 1 (Daisy)",
+                    "Kelas 2 (Dandelion)",
+                    "Kelas 3 (Rose)",
+                    "Kelas 4 (Sunflower)",
+                    "Kelas 5 (Tulip)"
+                ]
                 class_name = labels[idx] if idx < len(labels) else str(idx)
-                st.image(img, caption="🖼️ Gambar Diupload", width=300)
+                st.image(img, caption="🖼️ Gambar Diupload", use_container_width=True)
                 st.markdown(f"""
                 <div class="detect-result">
-                    📊 <b>Hasil Prediksi:</b> {class_name}<br>
+                    🌸 <b>Hasil Klasifikasi:</b> {class_name}<br>
                     🎯 <b>Akurasi:</b> {acc:.2f}%
                 </div>
                 """, unsafe_allow_html=True)
-            else:
-                st.info("Silakan unggah gambar untuk klasifikasi di atas.")
 
-    st.markdown("<br>", unsafe_allow_html=True)
-    if st.button("Kembali ke Halaman Awal"):
+    if st.button("⬅️ Kembali ke Halaman Awal"):
         st.session_state['page'] = 'home'
 
 
