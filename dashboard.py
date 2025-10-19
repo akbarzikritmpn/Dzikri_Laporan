@@ -228,12 +228,13 @@ def halaman_main():
                                 (xmin, max(ymin - 10, 20)), cv2.FONT_HERSHEY_SIMPLEX,
                                 0.6, (0, 255, 0), 2, cv2.LINE_AA)
 
-                    # Gambar diperkecil dan diberi jarak antar kolom
+                    # ===== Tampilan gambar responsif =====
+                    max_width = 300
                     colA, colB = st.columns([1, 1], gap="large")
                     with colA:
-                        st.image(img, caption="🖼️ Gambar Asli", use_container_width=False, width=220)
+                        st.image(img, caption="🖼️ Gambar Asli", use_container_width=False, width=max_width)
                     with colB:
-                        st.image(img_with_boxes, caption="📦 Hasil Deteksi & Klasifikasi", use_container_width=False, width=220)
+                        st.image(img_with_boxes, caption="📦 Hasil Deteksi & Klasifikasi", use_container_width=False, width=max_width)
 
                     st.markdown(
                         f'<div class="detect-result">✅ Objek Terdeteksi: <b>{yolo_label}</b><br>'
@@ -257,7 +258,7 @@ def halaman_main():
                 class_labels = ["Kelas 1", "Kelas 2", "Kelas 3", "Kelas 4", "Kelas 5"]
                 class_name = class_labels[class_index] if class_index < len(class_labels) else str(class_index)
 
-                st.image(img, caption="🖼️ Gambar Diupload", use_container_width=False, width=220)
+                st.image(img, caption="🖼️ Gambar Diupload", use_container_width=False, width=300)
                 st.markdown(
                     f'<div class="detect-result">📊 <b>Hasil Prediksi:</b> {class_name}<br>🎯 <b>Akurasi:</b> {accuracy:.2f}%</div>',
                     unsafe_allow_html=True
