@@ -185,6 +185,7 @@ def halaman_main():
     with col2:
         st.markdown('<div class="section-title">📤 Upload Gambar Sesuai Mode</div>', unsafe_allow_html=True)
 
+        # ====== MODE YOLO ======
         if mode == "Deteksi Objek (YOLO)":
             uploaded_yolo = st.file_uploader("Unggah gambar untuk Deteksi Objek 👇", type=["jpg", "jpeg", "png"], key="yolo")
             if uploaded_yolo is not None:
@@ -197,7 +198,6 @@ def halaman_main():
 
                 for box in results[0].boxes:
                     xmin, ymin, xmax, ymax = map(int, box.xyxy[0])
-                    confidence = float(box.conf[0])
                     label_index = int(box.cls[0])
                     yolo_label = class_names[label_index]
 
@@ -209,7 +209,7 @@ def halaman_main():
                     pred = classifier.predict(cropped_arr)
                     idx = np.argmax(pred)
                     acc = float(np.max(pred)) * 100
-                    labels = ["Kelas 1", "Kelas 2", "Kelas 3", "Kelas 4", "Kelas 5"]
+                    labels = ["Kelas 1 (Daisy)", "Kelas 2 (Dandelion)", "Kelas 3 (Rose)", "Kelas 4 (Sunflower)", "Kelas 5 (Tulip)"]
                     class_name = labels[idx] if idx < len(labels) else str(idx)
 
                     cv2.rectangle(img_with_boxes, (xmin, ymin), (xmax, ymax), (0,255,0), 2)
@@ -218,13 +218,18 @@ def halaman_main():
                                 0.6, (0,255,0), 2, cv2.LINE_AA)
                     detected_objects.append((yolo_label, class_name, acc))
 
-                st.image(img, caption="🖼️ Gambar Asli", width=300)
-                st.image(img_with_boxes, caption="📦 Hasil Deteksi & Klasifikasi", width=300)
+                # ======== Gambar Bersampingan ========
+                col_yolo1, col_yolo2 = st.columns([1, 1], gap="large")
+                with col_yolo1:
+                    st.image(img, caption="🖼️ Gambar Asli", use_container_width=True)
+                with col_yolo2:
+                    st.image(img_with_boxes, caption="📦 Hasil Deteksi & Klasifikasi", use_container_width=True)
 
                 st.markdown('<div class="detect-result">✅ Hasil Deteksi dan Klasifikasi:</div>', unsafe_allow_html=True)
                 for i, (det, cls, acc) in enumerate(detected_objects):
                     st.markdown(f"- **Objek {i+1}:** Deteksi = `{det}`, Klasifikasi = `{cls}`, Akurasi = `{acc:.2f}%`")
 
+        # ====== MODE KLASIFIKASI ======
         elif mode == "Klasifikasi Gambar":
             uploaded_class = st.file_uploader("Unggah gambar untuk Klasifikasi 👇", type=["jpg", "jpeg", "png"], key="classify")
             if uploaded_class is not None:
@@ -235,7 +240,7 @@ def halaman_main():
                 pred = classifier.predict(arr)
                 idx = np.argmax(pred)
                 acc = float(np.max(pred)) * 100
-                labels = ["Kelas 1", "Kelas 2", "Kelas 3", "Kelas 4", "Kelas 5"]
+                labels = ["Kelas 1 (Daisy)", "Kelas 2 (Dandelion)", "Kelas 3 (Rose)", "Kelas 4 (Sunflower)", "Kelas 5 (Tulip)"]
                 class_name = labels[idx] if idx < len(labels) else str(idx)
 
                 st.image(img, caption="🖼️ Gambar Diupload", width=300)
