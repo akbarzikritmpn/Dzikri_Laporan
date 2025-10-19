@@ -39,6 +39,7 @@ st.markdown("""
     border: 1.5px solid #c9e7c0;
     box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
 }
+
 .main-box {
     background: linear-gradient(145deg, #8daaa5, #618472);
     border-radius: 15px;
@@ -51,6 +52,7 @@ st.markdown("""
     box-shadow: 4px 4px 10px rgba(0,0,0,0.3);
     line-height: 1.3;
 }
+
 .button-box {
     background: linear-gradient(145deg, #7e9c7d, #55775b);
     border-radius: 12px;
@@ -69,6 +71,7 @@ st.markdown("""
 .button-box:hover {
     background: linear-gradient(145deg, #55775b, #7e9c7d);
 }
+
 .block-container {
     padding-top: 0rem !important;
     padding-bottom: 0rem !important;
@@ -76,6 +79,7 @@ st.markdown("""
     padding-right: 2rem !important;
     max-width: 100% !important;
 }
+
 .main-title {
     background: linear-gradient(145deg, #6b9474, #547a64);
     border: 3px solid #c9e7c0;
@@ -89,6 +93,7 @@ st.markdown("""
     box-shadow: 4px 4px 8px rgba(0,0,0,0.25);
     width: 100%;
 }
+
 .section-box {
     background: linear-gradient(145deg, #7ba883, #547a64);
     border-radius: 20px;
@@ -98,6 +103,7 @@ st.markdown("""
     box-shadow: 4px 4px 8px rgba(0,0,0,0.25);
     width: 100%;
 }
+
 .section-title {
     font-size: 22px;
     font-weight: bold;
@@ -109,6 +115,7 @@ st.markdown("""
     text-align: center;
     border: 2px solid #c9e7c0;
 }
+
 div[data-testid="stFileUploader"] {
     background: #7ba883;
     border: 2px dashed #c9e7c0;
@@ -117,6 +124,7 @@ div[data-testid="stFileUploader"] {
     text-align: center;
     color: #f0f8ec !important;
 }
+
 .detect-result {
     background: #6f9b7c;
     border: 2px solid #c9e7c0;
@@ -127,6 +135,7 @@ div[data-testid="stFileUploader"] {
     font-weight: bold;
     text-align: center;
 }
+
 .explain-box {
     background: #7ba883;
     border: 2px solid #c9e7c0;
@@ -147,27 +156,17 @@ if 'page' not in st.session_state:
 # ====== Halaman Awal ======
 def halaman_awal():
     st.markdown('<div class="welcome-box">SELAMAT DATANG DI DASHBOARD MUHAMMAD AKBAR DZIKRI</div>', unsafe_allow_html=True)
-
-    # 🌸 Tambahkan ikon bunga di kiri dan kanan teks judul
     st.markdown("""
     <div class="main-box">
-        <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
-            <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" style="width:60px; height:60px;" />
-            <div>
-                KLASIFIKASI GAMBAR <br> & <br> OBJEK DETECTION
-            </div>
-            <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" style="width:60px; height:60px;" />
-        </div>
+        KLASIFIKASI GAMBAR <br> & <br> OBJEK DETECTION
     </div>
     """, unsafe_allow_html=True)
-
     if st.button("HALAMAN BERIKUTNYA"):
         st.session_state['page'] = 'main'
 
 # ====== Halaman Utama ======
 def halaman_main():
     st.markdown('<div class="main-title">🧠 Deteksi dan Klasifikasi Gambar</div>', unsafe_allow_html=True)
-
     col1, col2 = st.columns(2)
 
     with col1:
@@ -178,15 +177,15 @@ def halaman_main():
         if mode == "Deteksi Objek (YOLO)":
             st.markdown("""
             <div class="explain-box">
-            <b>Mode Deteksi Objek (YOLO):</b><br>
-            Sistem akan mendeteksi setiap objek di gambar, memberi label, dan klasifikasi tambahan.
+                <b>Mode Deteksi Objek (YOLO):</b><br>
+                Sistem akan mendeteksi setiap objek di gambar, memberi label, dan klasifikasi tambahan.
             </div>
             """, unsafe_allow_html=True)
         else:
             st.markdown("""
             <div class="explain-box">
-            <b>Mode Klasifikasi Gambar:</b><br>
-            Sistem akan menentukan kelas keseluruhan gambar menggunakan model klasifikasi.
+                <b>Mode Klasifikasi Gambar:</b><br>
+                Sistem akan menentukan kelas keseluruhan gambar menggunakan model klasifikasi.
             </div>
             """, unsafe_allow_html=True)
 
@@ -208,24 +207,21 @@ def halaman_main():
                     xmin, ymin, xmax, ymax = map(int, box.xyxy[0])
                     label_index = int(box.cls[0])
                     yolo_label = class_names[label_index]
-
                     cropped_obj = img_array[ymin:ymax, xmin:xmax]
                     cropped_pil = Image.fromarray(cropped_obj).resize((224, 224))
                     cropped_arr = image.img_to_array(cropped_pil)
                     cropped_arr = np.expand_dims(cropped_arr, axis=0) / 255.0
-
                     pred = classifier.predict(cropped_arr)
                     idx = np.argmax(pred)
                     acc = float(np.max(pred)) * 100
                     labels = ["Kelas 1 (Daisy)", "Kelas 2 (Dandelion)", "Kelas 3 (Rose)", "Kelas 4 (Sunflower)", "Kelas 5 (Tulip)"]
                     class_name = labels[idx] if idx < len(labels) else str(idx)
-
                     cv2.rectangle(img_with_boxes, (xmin, ymin), (xmax, ymax), (0,255,0), 2)
-                    cv2.putText(img_with_boxes, f"{class_name} ({acc:.1f}%)",
-                                (xmin, max(ymin - 10, 20)), cv2.FONT_HERSHEY_SIMPLEX,
-                                0.6, (0,255,0), 2, cv2.LINE_AA)
+                    cv2.putText(img_with_boxes, f"{class_name} ({acc:.1f}%)", (xmin, max(ymin - 10, 20)),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,255,0), 2, cv2.LINE_AA)
                     detected_objects.append((yolo_label, class_name, acc))
 
+                # ======== Gambar Bersampingan ========
                 col_yolo1, col_yolo2 = st.columns([1, 1], gap="large")
                 with col_yolo1:
                     st.image(img, caption="🖼️ Gambar Asli", use_container_width=True)
@@ -234,7 +230,7 @@ def halaman_main():
 
                 st.markdown('<div class="detect-result">✅ Hasil Deteksi dan Klasifikasi:</div>', unsafe_allow_html=True)
                 for i, (det, cls, acc) in enumerate(detected_objects):
-                    st.markdown(f"- **Objek {i+1}:** Deteksi = `{det}`, Klasifikasi = `{cls}`, Akurasi = `{acc:.2f}%`")
+                    st.markdown(f"- **Objek {i+1}:** Deteksi = {det}, Klasifikasi = {cls}, Akurasi = {acc:.2f}%")
 
         # ====== MODE KLASIFIKASI ======
         elif mode == "Klasifikasi Gambar":
@@ -249,12 +245,11 @@ def halaman_main():
                 acc = float(np.max(pred)) * 100
                 labels = ["Kelas 1 (Daisy)", "Kelas 2 (Dandelion)", "Kelas 3 (Rose)", "Kelas 4 (Sunflower)", "Kelas 5 (Tulip)"]
                 class_name = labels[idx] if idx < len(labels) else str(idx)
-
                 st.image(img, caption="🖼️ Gambar Diupload", width=300)
                 st.markdown(f"""
                 <div class="detect-result">
-                📊 <b>Hasil Prediksi:</b> {class_name}<br>
-                🎯 <b>Akurasi:</b> {acc:.2f}%
+                    📊 <b>Hasil Prediksi:</b> {class_name}<br>
+                    🎯 <b>Akurasi:</b> {acc:.2f}%
                 </div>
                 """, unsafe_allow_html=True)
             else:
@@ -263,6 +258,7 @@ def halaman_main():
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("Kembali ke Halaman Awal"):
         st.session_state['page'] = 'home'
+
 
 # ====== Routing Halaman ======
 if st.session_state['page'] == 'home':
