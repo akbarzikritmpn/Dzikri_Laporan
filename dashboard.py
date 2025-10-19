@@ -203,7 +203,7 @@ def halaman_main():
                     xmin, ymin, xmax, ymax = map(int, box.xyxy[0])
                     confidence = float(box.conf[0])
                     label_index = int(box.cls[0])
-                    yolo_label = ["Daisy", "Dandelion", "Rose", "Sunflower", "Tulip"]
+                    yolo_label = model.names
 
                     # --- Crop objek untuk klasifikasi tambahan ---
                     cropped_obj = img_array[ymin:ymax, xmin:xmax]
@@ -235,7 +235,6 @@ def halaman_main():
                 # Tampilkan hasil deteksi dan klasifikasi per objek
                 st.markdown('<div class="detect-result">✅ Semua objek berhasil dideteksi dan diklasifikasikan:</div>', unsafe_allow_html=True)
                 for i, (det_label, cls_label, acc) in enumerate(detected_objects):
-                    det_label = det_label[int(cls_label)]
                     st.markdown(f"- **Objek {i+1}:** Deteksi YOLO = `{det_label}`, Klasifikasi = `{cls_label}`, Akurasi = `{acc:.2f}%`")
 
             elif mode == "Klasifikasi Gambar":
