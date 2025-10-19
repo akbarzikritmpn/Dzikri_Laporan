@@ -203,7 +203,7 @@ def halaman_main():
                     xmin, ymin, xmax, ymax = map(int, box.xyxy[0])
                     confidence = float(box.conf[0])
                     label_index = int(box.cls[0])
-                    yolo_label = model.names
+                    yolo_label = yolo_model.names
 
                     # --- Crop objek untuk klasifikasi tambahan ---
                     cropped_obj = img_array[ymin:ymax, xmin:xmax]
