@@ -93,9 +93,9 @@ if 'page' not in st.session_state:
 def halaman_awal():
     st.set_page_config(page_title="Dashboard Akbar Dzikri", layout="wide")
 
+    # Judul utama mengikuti CSS .main-title
     st.markdown("""
-        <div style='text-align:center; background-color:#98b8ac; padding:25px; 
-                    border-radius:25px; box-shadow:0px 4px 6px rgba(0,0,0,0.2);font-size:32px;'>
+        <div class="main-title">
             🌸 <b>SELAMAT DATANG DI DASHBOARD MUHAMMAD AKBAR DZIKRI</b> 🌸
         </div>
     """, unsafe_allow_html=True)
@@ -108,19 +108,16 @@ def halaman_awal():
     # ================================
     with col1:
         st.markdown("""
-            <div style='background-color:#a5c1b2; padding:35px; border-radius:20px;
-                        box-shadow:2px 4px 10px rgba(0,0,0,0.2); text-align:center;'>
-                <h2 style='color:#f7fff7;'>🌼 KLASIFIKASI GAMBAR 🌼</h2>
-                <p style='color:#f1f1f1; font-size:16px; text-align:justify; line-height:1.6;'>
-                    Fitur ini dirancang untuk mengidentifikasi jenis bunga berdasarkan gambar 
-                    yang kamu unggah. Model yang digunakan adalah <b>Convolutional Neural Network (CNN)</b>,
-                    yang telah dilatih menggunakan ratusan gambar bunga dari berbagai kategori 
-                    seperti <b>Daisy, Dandelion, Rose, Sunflower,</b> dan <b>Tulip</b>.
-                    <br><br>
-                    Saat kamu mengunggah gambar, sistem akan melakukan proses ekstraksi fitur,
-                    menganalisis pola visual seperti bentuk kelopak, warna dominan, dan tekstur permukaan bunga.
-                    Setelah itu, hasil prediksi akan ditampilkan.
-                </p>
+            <div class="section-title">🌼 KLASIFIKASI GAMBAR 🌼</div>
+            <div class="explain-box">
+                Fitur ini dirancang untuk mengidentifikasi jenis bunga berdasarkan gambar 
+                yang kamu unggah. Model yang digunakan adalah <b>Convolutional Neural Network (CNN)</b>,
+                yang telah dilatih menggunakan ratusan gambar bunga dari berbagai kategori 
+                seperti <b>Daisy, Dandelion, Rose, Sunflower,</b> dan <b>Tulip</b>.
+                <br><br>
+                Saat kamu mengunggah gambar, sistem akan melakukan proses ekstraksi fitur,
+                menganalisis pola visual seperti bentuk kelopak, warna dominan, dan tekstur permukaan bunga.
+                Setelah itu, hasil prediksi akan ditampilkan.
             </div>
         """, unsafe_allow_html=True)
 
@@ -129,24 +126,22 @@ def halaman_awal():
     # ================================
     with col2:
         st.markdown("""
-            <div style='background-color:#a5c1b2; padding:35px; border-radius:20px;
-                        box-shadow:2px 4px 10px rgba(0,0,0,0.2); text-align:center;'>
-                <h2 style='color:#f7fff7;'>🌻 DETEKSI OBJEK 🌻</h2>
-                <p style='color:#f1f1f1; font-size:16px; text-align:justify; line-height:1.6;'>
-                    Fitur ini menggunakan model <b>YOLO (You Only Look Once)</b> yang berfungsi untuk mendeteksi 
-                    keberadaan bunga secara otomatis dalam suatu gambar. 
-                    Model akan mencari area-area yang berpotensi mengandung objek bunga dan 
-                    menampilkan hasil deteksi dalam bentuk <b>kotak hijau</b> di sekitar objek tersebut.
-                    <br><br>
-                    Dengan fitur ini, pengguna tidak perlu lagi menandai objek secara manual — 
-                    cukup unggah gambar, dan sistem akan secara otomatis melakukan deteksi serta klasifikasi secara bersamaan.
-                </p>
+            <div class="section-title">🌻 DETEKSI OBJEK 🌻</div>
+            <div class="explain-box">
+                Fitur ini menggunakan model <b>YOLO (You Only Look Once)</b> yang berfungsi untuk mendeteksi 
+                keberadaan bunga secara otomatis dalam suatu gambar. 
+                Model akan mencari area-area yang berpotensi mengandung objek bunga dan 
+                menampilkan hasil deteksi dalam bentuk <b>kotak hijau</b> di sekitar objek tersebut.
+                <br><br>
+                Dengan fitur ini, pengguna tidak perlu lagi menandai objek secara manual — 
+                cukup unggah gambar, dan sistem akan secara otomatis melakukan deteksi serta klasifikasi secara bersamaan.
             </div>
         """, unsafe_allow_html=True)
 
     st.write("")
     if st.button("HALAMAN BERIKUTNYA →"):
         st.session_state['page'] = 'main'
+
 
 # ====== HALAMAN UTAMA (tidak diubah) ======
 def halaman_main():
