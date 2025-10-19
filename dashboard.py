@@ -94,8 +94,8 @@ def halaman_awal():
     st.set_page_config(page_title="Dashboard Akbar Dzikri", layout="wide")
 
     st.markdown("""
-        <div style='text-align:center; background-color:#98b8ac; padding:15px; 
-                    border-radius:15px; box-shadow:0px 4px 6px rgba(0,0,0,0.2);'>
+        <div style='text-align:center; background-color:#98b8ac; padding:25px; 
+                    border-radius:25px; box-shadow:0px 4px 6px rgba(0,0,0,0.2);'>
             🌸 <b>SELAMAT DATANG DI DASHBOARD MUHAMMAD AKBAR DZIKRI</b> 🌸
         </div>
     """, unsafe_allow_html=True)
