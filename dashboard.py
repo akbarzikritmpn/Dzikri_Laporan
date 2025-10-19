@@ -139,11 +139,6 @@ def halaman_awal():
                     Model akan mencari area-area yang berpotensi mengandung objek bunga dan 
                     menampilkan hasil deteksi dalam bentuk <b>kotak hijau</b> di sekitar objek tersebut.
                     <br><br>
-                    Setiap deteksi akan disertai dengan hasil klasifikasi jenis bunga 
-                    dan nilai akurasi model terhadap hasil prediksi tersebut. 
-                    Proses ini sangat efisien karena YOLO mampu menganalisis gambar secara menyeluruh hanya dalam sekali proses, 
-                    sehingga deteksi berlangsung cepat namun tetap akurat.
-                    <br><br>
                     Dengan fitur ini, pengguna tidak perlu lagi menandai objek secara manual — 
                     cukup unggah gambar, dan sistem akan secara otomatis melakukan deteksi serta klasifikasi secara bersamaan.
                 </p>
