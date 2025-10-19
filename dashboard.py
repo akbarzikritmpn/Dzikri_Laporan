@@ -235,7 +235,7 @@ def halaman_main():
                 # Tampilkan hasil deteksi dan klasifikasi per objek
                 st.markdown('<div class="detect-result">✅ Semua objek berhasil dideteksi dan diklasifikasikan:</div>', unsafe_allow_html=True)
                 for i, (det_label, cls_label, acc) in enumerate(detected_objects):
-                    det_label = class_labels
+                    det_label = class_name
                     st.markdown(f"- **Objek {i+1}:** Deteksi YOLO = `{det_label}`, Klasifikasi = `{cls_label}`, Akurasi = `{acc:.2f}%`")
 
             elif mode == "Klasifikasi Gambar":
