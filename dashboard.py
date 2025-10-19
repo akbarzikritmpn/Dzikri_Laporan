@@ -195,7 +195,7 @@ def halaman_main():
             if mode == "Deteksi Objek (YOLO)":
                 results = yolo_model(img_array)
                 img_with_boxes = img_array.copy()
-                class_names = class_names[label_index]
+                class_names = yolo_model.names
 
                 detected_objects = []
 
