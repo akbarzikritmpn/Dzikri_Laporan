@@ -25,52 +25,7 @@ st.markdown("""
     padding: 2rem 3rem;
     margin: 0;
 }
-[data-testid="stHeader"] { display: none; }
-[data-testid="stToolbar"] { display: none; }
-
-.welcome-box {
-    background: linear-gradient(145deg, #57876a, #9dbcae);
-    border-radius: 12px;
-    padding: 15px 20px;
-    margin-bottom: 25px;
-    text-align: center;
-    font-weight: bold;
-    font-size: 18px;
-    border: 1.5px solid #c9e7c0;
-    box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
-}
-
-.main-box {
-    background: linear-gradient(145deg, #8daaa5, #618472);
-    border-radius: 15px;
-    padding: 40px 25px;
-    margin-bottom: 25px;
-    font-weight: bold;
-    font-size: 28px;
-    text-align: center;
-    border: 2px solid #c9e7c0;
-    box-shadow: 4px 4px 10px rgba(0,0,0,0.3);
-    line-height: 1.3;
-}
-
-.button-box {
-    background: linear-gradient(145deg, #7e9c7d, #55775b);
-    border-radius: 12px;
-    padding: 10px 25px;
-    width: 160px;
-    margin: 0 auto;
-    text-align: center;
-    font-weight: bold;
-    color: #cadfc7;
-    cursor: pointer;
-    border: 1.5px solid #c9e7c0;
-    box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
-    user-select: none;
-    transition: background 0.3s ease;
-}
-.button-box:hover {
-    background: linear-gradient(145deg, #55775b, #7e9c7d);
-}
+[data-testid="stHeader"], [data-testid="stToolbar"] { display: none; }
 
 .block-container {
     padding-top: 0rem !important;
@@ -94,16 +49,6 @@ st.markdown("""
     width: 100%;
 }
 
-.section-box {
-    background: linear-gradient(145deg, #7ba883, #547a64);
-    border-radius: 20px;
-    border: 2px solid #c9e7c0;
-    padding: 25px;
-    color: #d6edc7;
-    box-shadow: 4px 4px 8px rgba(0,0,0,0.25);
-    width: 100%;
-}
-
 .section-title {
     font-size: 22px;
     font-weight: bold;
@@ -114,15 +59,6 @@ st.markdown("""
     margin-bottom: 15px;
     text-align: center;
     border: 2px solid #c9e7c0;
-}
-
-div[data-testid="stFileUploader"] {
-    background: #7ba883;
-    border: 2px dashed #c9e7c0;
-    border-radius: 12px;
-    padding: 15px;
-    text-align: center;
-    color: #f0f8ec !important;
 }
 
 .detect-result {
@@ -153,18 +89,72 @@ div[data-testid="stFileUploader"] {
 if 'page' not in st.session_state:
     st.session_state['page'] = 'home'
 
-# ====== Halaman Awal ======
+# ====== HALAMAN AWAL BARU ======
 def halaman_awal():
-    st.markdown('<div class="welcome-box">🌸 SELAMAT DATANG DI DASHBOARD MUHAMMAD AKBAR DZIKRI 🌸</div>', unsafe_allow_html=True)
+    st.set_page_config(page_title="Dashboard Akbar Dzikri", layout="wide")
+
     st.markdown("""
-    <div class="main-box">
-        KLASIFIKASI GAMBAR <br> & <br> DETEKSI OBJEK
-    </div>
+        <div style='text-align:center; background-color:#98b8ac; padding:15px; 
+                    border-radius:15px; box-shadow:0px 4px 6px rgba(0,0,0,0.2);'>
+            🌸 <b>SELAMAT DATANG DI DASHBOARD MUHAMMAD AKBAR DZIKRI</b> 🌸
+        </div>
     """, unsafe_allow_html=True)
-    if st.button("HALAMAN BERIKUTNYA"):
+
+    st.write("")
+    col1, col2 = st.columns(2)
+
+    # ================================
+    # Kolom 1 – Klasifikasi Gambar
+    # ================================
+    with col1:
+        st.markdown("""
+            <div style='background-color:#a5c1b2; padding:35px; border-radius:20px;
+                        box-shadow:2px 4px 10px rgba(0,0,0,0.2); text-align:center;'>
+                <h2 style='color:#f7fff7;'>🌼 KLASIFIKASI GAMBAR 🌼</h2>
+                <p style='color:#f1f1f1; font-size:16px; text-align:justify; line-height:1.6;'>
+                    Fitur ini dirancang untuk mengidentifikasi jenis bunga berdasarkan gambar 
+                    yang kamu unggah. Model yang digunakan adalah <b>Convolutional Neural Network (CNN)</b>,
+                    yang telah dilatih menggunakan ratusan gambar bunga dari berbagai kategori 
+                    seperti <b>Daisy, Dandelion, Rose, Sunflower,</b> dan <b>Tulip</b>.
+                    <br><br>
+                    Saat kamu mengunggah gambar, sistem akan melakukan proses ekstraksi fitur,
+                    menganalisis pola visual seperti bentuk kelopak, warna dominan, dan tekstur permukaan bunga.
+                    Setelah itu, hasil prediksi akan ditampilkan dengan <b>tingkat akurasi dalam persen</b>,
+                    yang menunjukkan seberapa yakin model terhadap klasifikasi tersebut.
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
+
+    # ================================
+    # Kolom 2 – Deteksi Objek
+    # ================================
+    with col2:
+        st.markdown("""
+            <div style='background-color:#a5c1b2; padding:35px; border-radius:20px;
+                        box-shadow:2px 4px 10px rgba(0,0,0,0.2); text-align:center;'>
+                <h2 style='color:#f7fff7;'>🌻 DETEKSI OBJEK 🌻</h2>
+                <p style='color:#f1f1f1; font-size:16px; text-align:justify; line-height:1.6;'>
+                    Fitur ini menggunakan model <b>YOLO (You Only Look Once)</b> yang berfungsi untuk mendeteksi 
+                    keberadaan bunga secara otomatis dalam suatu gambar. 
+                    Model akan mencari area-area yang berpotensi mengandung objek bunga dan 
+                    menampilkan hasil deteksi dalam bentuk <b>kotak hijau</b> di sekitar objek tersebut.
+                    <br><br>
+                    Setiap deteksi akan disertai dengan hasil klasifikasi jenis bunga 
+                    dan nilai akurasi model terhadap hasil prediksi tersebut. 
+                    Proses ini sangat efisien karena YOLO mampu menganalisis gambar secara menyeluruh hanya dalam sekali proses, 
+                    sehingga deteksi berlangsung cepat namun tetap akurat.
+                    <br><br>
+                    Dengan fitur ini, pengguna tidak perlu lagi menandai objek secara manual — 
+                    cukup unggah gambar, dan sistem akan secara otomatis melakukan deteksi serta klasifikasi secara bersamaan.
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
+
+    st.write("")
+    if st.button("HALAMAN BERIKUTNYA →"):
         st.session_state['page'] = 'main'
 
-# ====== Halaman Utama ======
+# ====== HALAMAN UTAMA (tidak diubah) ======
 def halaman_main():
     st.markdown('<div class="main-title">🧠 Deteksi dan Klasifikasi Gambar</div>', unsafe_allow_html=True)
     col1, col2 = st.columns(2)
@@ -172,8 +162,6 @@ def halaman_main():
     with col1:
         st.markdown('<div class="section-title">⚙️ Pilih Mode</div>', unsafe_allow_html=True)
         mode = st.radio("Mode Analisis:", ["Deteksi Objek (YOLO)", "Klasifikasi Gambar"])
-        st.markdown('</div>', unsafe_allow_html=True)
-
         if mode == "Deteksi Objek (YOLO)":
             st.markdown("""
             <div class="explain-box">
@@ -221,14 +209,12 @@ def halaman_main():
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,255,0), 2, cv2.LINE_AA)
                     detected_objects.append((yolo_label, class_name, acc))
 
-                # ======== Gambar Bersampingan ========
                 col_yolo1, col_yolo2 = st.columns([1, 1], gap="large")
                 with col_yolo1:
                     st.image(img, caption="🖼️ Gambar Asli", use_container_width=True)
                 with col_yolo2:
                     st.image(img_with_boxes, caption="📦 Hasil Deteksi & Klasifikasi", use_container_width=True)
 
-                # ======== Hasil Deteksi Dalam Kotak ========
                 st.markdown('<div class="detect-result">✅ <b>Hasil Deteksi dan Klasifikasi:</b></div>', unsafe_allow_html=True)
                 for i, (det, cls, acc) in enumerate(detected_objects):
                     st.markdown(f"""
@@ -264,8 +250,9 @@ def halaman_main():
                 st.info("Silakan unggah gambar untuk klasifikasi di atas.")
 
     st.markdown("<br>", unsafe_allow_html=True)
-    if st.button("Kembali ke Halaman Awal"):
+    if st.button("⬅️ Kembali ke Halaman Awal"):
         st.session_state['page'] = 'home'
+
 
 # ====== Routing Halaman ======
 if st.session_state['page'] == 'home':
