@@ -51,53 +51,6 @@ st.markdown("""
     box-shadow: 4px 4px 10px rgba(0,0,0,0.3);
     line-height: 1.3;
 }
-.button-box {
-    background: linear-gradient(145deg, #7e9c7d, #55775b);
-    border-radius: 12px;
-    padding: 10px 25px;
-    width: 160px;
-    margin: 0 auto;
-    text-align: center;
-    font-weight: bold;
-    color: #cadfc7;
-    cursor: pointer;
-    border: 1.5px solid #c9e7c0;
-    box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
-    user-select: none;
-    transition: background 0.3s ease;
-}
-.button-box:hover {
-    background: linear-gradient(145deg, #55775b, #7e9c7d);
-}
-.block-container {
-    padding-top: 0rem !important;
-    padding-bottom: 0rem !important;
-    padding-left: 2rem !important;
-    padding-right: 2rem !important;
-    max-width: 100% !important;
-}
-.main-title {
-    background: linear-gradient(145deg, #6b9474, #547a64);
-    border: 3px solid #c9e7c0;
-    border-radius: 20px;
-    color: #eaf4e2;
-    text-align: center;
-    padding: 20px;
-    font-size: 28px;
-    font-weight: bold;
-    margin: 20px auto 25px auto;
-    box-shadow: 4px 4px 8px rgba(0,0,0,0.25);
-    width: 100%;
-}
-.section-box {
-    background: linear-gradient(145deg, #7ba883, #547a64);
-    border-radius: 20px;
-    border: 2px solid #c9e7c0;
-    padding: 25px;
-    color: #d6edc7;
-    box-shadow: 4px 4px 8px rgba(0,0,0,0.25);
-    width: 100%;
-}
 .section-title {
     font-size: 22px;
     font-weight: bold;
@@ -108,14 +61,6 @@ st.markdown("""
     margin-bottom: 15px;
     text-align: center;
     border: 2px solid #c9e7c0;
-}
-div[data-testid="stFileUploader"] {
-    background: #7ba883;
-    border: 2px dashed #c9e7c0;
-    border-radius: 12px;
-    padding: 15px;
-    text-align: center;
-    color: #f0f8ec !important;
 }
 .detect-result {
     background: #6f9b7c;
@@ -171,15 +116,16 @@ def halaman_main():
             explanation = """
             <div class="explain-box">
             <b>Mode Deteksi Objek (YOLO):</b><br>
-            Sistem mendeteksi setiap objek dalam gambar, memberikan posisi dan area objek,
-            lalu mengklasifikasikan setiap objek tersebut menggunakan model klasifikasi.
+            Sistem mendeteksi setiap objek dalam gambar, memberikan posisi serta area objek,
+            lalu mengklasifikasikan setiap objek tersebut berdasarkan model bunga.
             </div>
             """
         else:
             explanation = """
             <div class="explain-box">
             <b>Mode Klasifikasi Gambar:</b><br>
-            Mode ini mengklasifikasikan keseluruhan gambar ke dalam satu kelas tertentu berdasarkan model yang telah dilatih.
+            Mode ini mengklasifikasikan keseluruhan gambar bunga ke dalam salah satu kelas:
+            Kelas 1 (Daisy), Kelas 2 (Dandelion), Kelas 3 (Rose), Kelas 4 (Sunflower), Kelas 5 (Tulip).
             </div>
             """
         st.markdown(explanation, unsafe_allow_html=True)
@@ -187,7 +133,6 @@ def halaman_main():
     with col2:
         st.markdown('<div class="section-title">📤 Upload & Hasil Deteksi / Klasifikasi</div>', unsafe_allow_html=True)
 
-        # ===== Upload terpisah =====
         uploaded_yolo = None
         uploaded_class = None
 
@@ -196,35 +141,38 @@ def halaman_main():
         else:
             uploaded_class = st.file_uploader("🖼️ Upload gambar untuk Klasifikasi", type=["jpg", "jpeg", "png"], key="class_upload")
 
-        # ===== YOLO DETECTION + KLASIFIKASI =====
+        # ===== Label klasifikasi bunga =====
+        class_labels = [
+            "Kelas 1 (Daisy)",
+            "Kelas 2 (Dandelion)",
+            "Kelas 3 (Rose)",
+            "Kelas 4 (Sunflower)",
+            "Kelas 5 (Tulip)"
+        ]
+
+        # ===== YOLO + KLASIFIKASI =====
         if uploaded_yolo is not None and mode == "Deteksi Objek (YOLO)":
             img = Image.open(uploaded_yolo)
             img_array = np.array(img)
 
             results = yolo_model(img_array)
             img_with_boxes = img_array.copy()
-
             detected_objects = []
-
-            # Daftar label klasifikasi (menggantikan label YOLO)
-            class_labels = ["Kelas 1", "Kelas 2", "Kelas 3", "Kelas 4", "Kelas 5"]
 
             for box in results[0].boxes:
                 xmin, ymin, xmax, ymax = map(int, box.xyxy[0])
 
-                # --- Crop objek untuk klasifikasi ---
                 cropped_obj = img_array[ymin:ymax, xmin:xmax]
                 cropped_obj_pil = Image.fromarray(cropped_obj).resize((224, 224))
                 cropped_obj_array = image.img_to_array(cropped_obj_pil)
                 cropped_obj_array = np.expand_dims(cropped_obj_array, axis=0) / 255.0
 
-                # Prediksi dengan model klasifikasi
                 class_pred = classifier.predict(cropped_obj_array)
                 class_index = np.argmax(class_pred)
                 accuracy = float(np.max(class_pred)) * 100
-                class_name = class_labels[class_index] if class_index < len(class_labels) else f"Kelas {class_index+1}"
+                class_name = class_labels[class_index]
 
-                # Gambar bounding box + teks berdasarkan hasil klasifikasi
+                # Gambar kotak + label
                 cv2.rectangle(img_with_boxes, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2)
                 cv2.putText(img_with_boxes, f"{class_name} ({accuracy:.1f}%)",
                             (xmin, max(ymin - 10, 20)), cv2.FONT_HERSHEY_SIMPLEX,
@@ -236,11 +184,11 @@ def halaman_main():
             with colA:
                 st.image(img, caption="🖼️ Gambar Asli", use_container_width=False, width=300)
             with colB:
-                st.image(img_with_boxes, caption="📦 Deteksi & Klasifikasi Multi-Objek", use_container_width=False, width=300)
+                st.image(img_with_boxes, caption="📦 Deteksi & Klasifikasi Bunga", use_container_width=False, width=300)
 
-            st.markdown('<div class="detect-result">✅ Semua objek berhasil diklasifikasikan berdasarkan model klasifikasi:</div>', unsafe_allow_html=True)
+            st.markdown('<div class="detect-result">✅ Semua objek berhasil diklasifikasikan sebagai bunga:</div>', unsafe_allow_html=True)
             for i, (cls_label, acc) in enumerate(detected_objects):
-                st.markdown(f"- **Objek {i+1}:** Kelas = `{cls_label}`, Akurasi = `{acc:.2f}%`")
+                st.markdown(f"- 🌸 **Objek {i+1}:** {cls_label} — `{acc:.2f}%`")
 
         # ===== KLASIFIKASI GAMBAR =====
         elif uploaded_class is not None and mode == "Klasifikasi Gambar":
@@ -253,23 +201,21 @@ def halaman_main():
             class_index = np.argmax(prediction)
             accuracy = float(np.max(prediction)) * 100
 
-            class_labels = ["Kelas 1", "Kelas 2", "Kelas 3", "Kelas 4", "Kelas 5"]
-            class_name = class_labels[class_index] if class_index < len(class_labels) else f"Kelas {class_index+1}"
+            class_name = class_labels[class_index]
 
             st.image(img, caption="🖼️ Gambar Diupload", use_container_width=False, width=300)
             st.markdown(
-                f'<div class="detect-result">📊 <b>Hasil Prediksi:</b> {class_name}<br>🎯 <b>Akurasi:</b> {accuracy:.2f}%</div>',
+                f'<div class="detect-result">🌼 <b>Hasil Prediksi:</b> {class_name}<br>🎯 <b>Akurasi:</b> {accuracy:.2f}%</div>',
                 unsafe_allow_html=True
             )
         else:
             st.info("Silakan unggah gambar terlebih dahulu di atas.")
-        st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("Kembali ke Halaman Awal"):
         st.session_state['page'] = 'home'
 
-# ====== Routing Halaman ======
+# ====== Routing ======
 if st.session_state['page'] == 'home':
     halaman_awal()
 elif st.session_state['page'] == 'main':
