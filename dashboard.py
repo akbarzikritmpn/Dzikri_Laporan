@@ -103,7 +103,7 @@ def halaman_awal():
 
     st.markdown("""
         <div class="section-title">
-             <b>Penjelasan Awak Sebelum Menuju Dashboard</b> 
+             <b>Penjelasan Awal Sebelum Menuju Dashboard</b> 
         </div>
     """, unsafe_allow_html=True)
 
