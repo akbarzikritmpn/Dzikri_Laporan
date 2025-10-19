@@ -203,7 +203,7 @@ def halaman_main():
                     xmin, ymin, xmax, ymax = map(int, box.xyxy[0])
                     confidence = float(box.conf[0])
                     label_index = int(box.cls[0])
-                    yolo_label = class_names[label_index]
+                    yolo_label = ["Daisy", "Dandelion", "Rose", "Sunflower", "Tulip"]
 
                     # --- Crop objek untuk klasifikasi tambahan ---
                     cropped_obj = img_array[ymin:ymax, xmin:xmax]
