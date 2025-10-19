@@ -147,9 +147,17 @@ if 'page' not in st.session_state:
 # ====== Halaman Awal ======
 def halaman_awal():
     st.markdown('<div class="welcome-box">SELAMAT DATANG DI DASHBOARD MUHAMMAD AKBAR DZIKRI</div>', unsafe_allow_html=True)
+
+    # 🌸 Tambahkan ikon bunga di kiri dan kanan teks judul
     st.markdown("""
     <div class="main-box">
-    KLASIFIKASI GAMBAR <br> & <br> OBJEK DETECTION
+        <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
+            <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" style="width:60px; height:60px;" />
+            <div>
+                KLASIFIKASI GAMBAR <br> & <br> OBJEK DETECTION
+            </div>
+            <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" style="width:60px; height:60px;" />
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -218,7 +226,6 @@ def halaman_main():
                                 0.6, (0,255,0), 2, cv2.LINE_AA)
                     detected_objects.append((yolo_label, class_name, acc))
 
-                # ======== Gambar Bersampingan ========
                 col_yolo1, col_yolo2 = st.columns([1, 1], gap="large")
                 with col_yolo1:
                     st.image(img, caption="🖼️ Gambar Asli", use_container_width=True)
