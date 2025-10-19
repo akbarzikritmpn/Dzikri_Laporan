@@ -119,8 +119,7 @@ def halaman_awal():
                     <br><br>
                     Saat kamu mengunggah gambar, sistem akan melakukan proses ekstraksi fitur,
                     menganalisis pola visual seperti bentuk kelopak, warna dominan, dan tekstur permukaan bunga.
-                    Setelah itu, hasil prediksi akan ditampilkan dengan <b>tingkat akurasi dalam persen</b>,
-                    yang menunjukkan seberapa yakin model terhadap klasifikasi tersebut.
+                    Setelah itu, hasil prediksi akan ditampilkan.
                 </p>
             </div>
         """, unsafe_allow_html=True)
