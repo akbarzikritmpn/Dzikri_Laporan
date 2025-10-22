@@ -15,7 +15,7 @@ def load_models():
 
 yolo_model, classifier = load_models()
 
-# ====== CSS ======
+# ====== CSS dengan Animasi ======
 st.markdown("""
 <style>
 [data-testid="stAppViewContainer"] {
@@ -35,6 +35,32 @@ st.markdown("""
     max-width: 100% !important;
 }
 
+/* ===== Animasi Muncul ===== */
+@keyframes fadeSlideIn {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Efek umum untuk semua kotak ===== */
+.main-title, .section-title, .detect-result, .explain-box {
+    transition: all 0.3s ease-in-out;
+    transform: scale(1);
+    animation: fadeSlideIn 0.8s ease forwards;
+}
+
+/* Efek hover: sedikit membesar dan bayangan muncul */
+.main-title:hover, .section-title:hover, .detect-result:hover, .explain-box:hover {
+    transform: scale(1.03);
+    box-shadow: 6px 6px 15px rgba(0,0,0,0.25);
+}
+
+/* Efek ketika ditekan (klik) — sedikit mengecil */
+.main-title:active, .section-title:active, .detect-result:active, .explain-box:active {
+    transform: scale(0.97);
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+}
+
+/* ===== Style Asli ===== */
 .main-title {
     background: linear-gradient(145deg, #6b9474, #547a64);
     border: 3px solid #c9e7c0;
@@ -253,8 +279,7 @@ def halaman_main():
                     st.markdown(f"""
                     <div class="detect-result">
                         📊 <b>Hasil Prediksi:</b> {class_name}<br>
-                        🎯 <b>Akurasi:</b> {acc:.2f}%
-                    </div>
+                        🎯 <b>Akurasi:</b> {acc:.2f}%</div>
                     """, unsafe_allow_html=True)
                 except Exception as e:
                     st.error(f"❌ Gagal memproses gambar: {str(e)}. Pastikan gambar valid dan coba lagi.")
@@ -264,7 +289,6 @@ def halaman_main():
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("⬅️ Kembali ke Halaman Awal"):
         st.session_state['page'] = 'home'
-
 
 # ====== Routing Halaman ======
 if st.session_state['page'] == 'home':
