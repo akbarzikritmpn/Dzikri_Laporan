@@ -6,7 +6,7 @@ import numpy as np
 from PIL import Image
 import cv2
 import pandas as pd
-import plotly.express as px  # tambahan untuk pie chart
+import plotly.express as px  # untuk pie chart
 
 # ====== Load Model ======
 @st.cache_resource
@@ -292,7 +292,6 @@ def halaman_main():
     if 'last_acc' not in st.session_state:
         st.session_state['last_acc'] = None
 
-    # Simpan akurasi terakhir untuk pie chart
     if mode == "Klasifikasi Gambar" and uploaded_class is not None:
         st.session_state['last_acc'] = acc
     elif mode == "Deteksi Objek (YOLO)" and uploaded_yolo is not None and len(detected_objects) > 0:
@@ -305,11 +304,22 @@ def halaman_main():
             "Hasil": ["Benar", "Salah"],
             "Persentase": [benar, salah]
         })
+
         fig = px.pie(pie_data, values='Persentase', names='Hasil',
                      color='Hasil', color_discrete_map={'Benar':'green','Salah':'red'},
                      hole=0.3)
-        fig.update_traces(textinfo='label+percent+value')
-        st.plotly_chart(fig, use_container_width=True)
+        fig.update_traces(textinfo='label+percent+value', marker=dict(line=dict(color='rgba(0,0,0,0)')))
+        fig.update_layout(
+            width=250, height=250,  # kecilkan ukuran
+            margin=dict(l=0, r=0, t=0, b=0),
+            paper_bgcolor='rgba(0,0,0,0)',  # hapus latar putih
+            plot_bgcolor='rgba(0,0,0,0)',
+        )
+
+        # letakkan di kiri
+        col_pie, _ = st.columns([1,2])
+        with col_pie:
+            st.plotly_chart(fig, use_container_width=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("⬅️ Kembali ke Halaman Awal"):
