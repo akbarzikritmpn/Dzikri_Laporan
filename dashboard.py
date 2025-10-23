@@ -276,7 +276,7 @@ def halaman_main():
                                 st.plotly_chart(fig_acc, use_container_width=False)
 
         # ====== KLASIFIKASI MODE ======
-        elif mode == "Klasifikasi Gambar":
+        if mode == "Klasifikasi Gambar":  # <-- gunakan 'if' BUKAN elif, di luar try YOLO
             uploaded_class = st.file_uploader("Unggah gambar untuk Klasifikasi 👇", type=["jpg", "jpeg", "png"], key="classify")
             if uploaded_class is not None:
                 try:
@@ -324,8 +324,6 @@ def halaman_main():
 
                 except Exception as e:
                     st.error(f"❌ Gagal memproses gambar: {str(e)}. Pastikan gambar valid dan coba lagi.")
-            else:
-                st.info("Silakan unggah gambar untuk klasifikasi di atas.")
 
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("⬅️ Kembali ke Halaman Awal"):
