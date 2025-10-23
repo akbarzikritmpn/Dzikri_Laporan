@@ -5,7 +5,6 @@ from tensorflow.keras.preprocessing import image
 import numpy as np
 from PIL import Image
 import cv2
-import matplotlib.pyplot as plt
 
 # ====== Load Model ======
 @st.cache_resource
@@ -36,27 +35,32 @@ st.markdown("""
     max-width: 100% !important;
 }
 
+/* ===== Animasi Muncul ===== */
 @keyframes fadeSlideIn {
     0% { opacity: 0; transform: translateY(20px); }
     100% { opacity: 1; transform: translateY(0); }
 }
 
+/* ===== Efek umum untuk semua kotak ===== */
 .main-title, .section-title, .detect-result, .explain-box {
     transition: all 0.3s ease-in-out;
     transform: scale(1);
     animation: fadeSlideIn 0.8s ease forwards;
 }
 
+/* Efek hover: sedikit membesar dan bayangan muncul */
 .main-title:hover, .section-title:hover, .detect-result:hover, .explain-box:hover {
     transform: scale(1.03);
     box-shadow: 6px 6px 15px rgba(0,0,0,0.25);
 }
 
+/* Efek ketika ditekan (klik) — sedikit mengecil */
 .main-title:active, .section-title:active, .detect-result:active, .explain-box:active {
     transform: scale(0.97);
     box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
 }
 
+/* ===== Style Asli ===== */
 .main-title {
     background: linear-gradient(145deg, #6b9474, #547a64);
     border: 3px solid #c9e7c0;
@@ -111,9 +115,6 @@ st.markdown("""
 if 'page' not in st.session_state:
     st.session_state['page'] = 'home'
 
-if 'count_per_class' not in st.session_state:
-    st.session_state['count_per_class'] = {f"Kelas {i}": 0 for i in range(1, 6)}
-
 # ====== HALAMAN AWAL ======
 def halaman_awal():
     st.set_page_config(page_title="Dashboard Akbar Dzikri", layout="wide")
@@ -133,6 +134,7 @@ def halaman_awal():
     st.write("")
     col1, col2 = st.columns(2)
 
+    # Kolom 1 – Klasifikasi
     with col1:
         st.markdown("""
             <div class="section-title">🌼 KLASIFIKASI GAMBAR 🌼</div>
@@ -148,6 +150,7 @@ def halaman_awal():
             </div>
         """, unsafe_allow_html=True)
 
+    # Kolom 2 – Deteksi
     with col2:
         st.markdown("""
             <div class="section-title">🌻 DETEKSI OBJEK 🌻</div>
@@ -190,22 +193,6 @@ def halaman_main():
             </div>
             """, unsafe_allow_html=True)
 
-        # ===== Tambahkan Bar Chart kecil di bawah penjelasan =====
-        st.markdown("<div style='margin-top:15px;'></div>", unsafe_allow_html=True)
-        st.markdown("<div class='section-title'>📊 Distribusi Kelas</div>", unsafe_allow_html=True)
-
-        classes = list(st.session_state['count_per_class'].keys())
-        counts = list(st.session_state['count_per_class'].values())
-
-        fig, ax = plt.subplots(figsize=(3, 2))
-        ax.bar(classes, counts, color="#6b9474", edgecolor="#c9e7c0")
-        ax.set_xlabel("Kelas", fontsize=8)
-        ax.set_ylabel("Jumlah", fontsize=8)
-        ax.set_title("Jumlah Prediksi Tiap Kelas", fontsize=9)
-        plt.xticks(rotation=25, fontsize=7)
-        plt.yticks(fontsize=7)
-        st.pyplot(fig)
-
     with col2:
         st.markdown('<div class="section-title">📤 Upload Gambar</div>', unsafe_allow_html=True)
 
@@ -216,6 +203,7 @@ def halaman_main():
                 try:
                     img = Image.open(uploaded_yolo).convert("RGB")
                     img_array = np.array(img)
+
                     if img_array.size == 0:
                         st.error("❌ Gambar tidak valid atau kosong. Silakan unggah gambar lain.")
                     else:
@@ -231,6 +219,7 @@ def halaman_main():
                             cropped_obj = img_array[ymin:ymax, xmin:xmax]
                             if cropped_obj.size == 0:
                                 continue
+
                             cropped_pil = Image.fromarray(cropped_obj).resize((224, 224))
                             cropped_arr = image.img_to_array(cropped_pil)
                             cropped_arr = np.expand_dims(cropped_arr, axis=0) / 255.0
@@ -245,11 +234,6 @@ def halaman_main():
                                         (xmin, max(ymin - 10, 20)),
                                         cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,255,0), 2, cv2.LINE_AA)
                             detected_objects.append((yolo_label, class_name, acc))
-
-                            # Update bar chart counter
-                            for i in range(1, 6):
-                                if f"Kelas {i}" in class_name:
-                                    st.session_state['count_per_class'][f"Kelas {i}"] += 1
 
                         col_yolo1, col_yolo2 = st.columns([1, 1], gap="large")
                         with col_yolo1:
@@ -269,8 +253,10 @@ def halaman_main():
                                     📊 <b>Klasifikasi:</b> {cls}<br>
                                     🎯 <b>Akurasi:</b> {acc:.2f}%</div>
                                 """, unsafe_allow_html=True)
+
                 except Exception as e:
-                    st.error(f"❌ Terjadi kesalahan saat memproses gambar: {str(e)}.")
+                    st.error(f"❌ Terjadi kesalahan saat memproses gambar: {str(e)}. "
+                             "Pastikan file adalah gambar yang valid (JPG/PNG) dan coba lagi.")
             else:
                 st.info("Silakan unggah gambar untuk deteksi di atas.")
 
@@ -295,16 +281,14 @@ def halaman_main():
                         📊 <b>Hasil Prediksi:</b> {class_name}<br>
                         🎯 <b>Akurasi:</b> {acc:.2f}%</div>
                     """, unsafe_allow_html=True)
-                    st.session_state['count_per_class'][f"Kelas {idx+1}"] += 1
                 except Exception as e:
-                    st.error(f"❌ Gagal memproses gambar: {str(e)}.")
+                    st.error(f"❌ Gagal memproses gambar: {str(e)}. Pastikan gambar valid dan coba lagi.")
             else:
                 st.info("Silakan unggah gambar untuk klasifikasi di atas.")
 
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("⬅️ Kembali ke Halaman Awal"):
         st.session_state['page'] = 'home'
-
 
 # ====== Routing Halaman ======
 if st.session_state['page'] == 'home':
