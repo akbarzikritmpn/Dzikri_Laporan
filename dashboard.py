@@ -17,7 +17,7 @@ def load_models():
 
 yolo_model, classifier = load_models()
 
-# ====== CSS dengan Animasi ======
+# ====== CSS ======
 st.markdown("""
 <style>
 [data-testid="stAppViewContainer"] {
@@ -131,7 +131,6 @@ def halaman_awal():
     st.write("")
     col1, col2 = st.columns(2)
 
-    # Kolom 1 – Klasifikasi
     with col1:
         st.markdown("""
             <div class="section-title">🌼 KLASIFIKASI GAMBAR 🌼</div>
@@ -147,7 +146,6 @@ def halaman_awal():
             </div>
         """, unsafe_allow_html=True)
 
-    # Kolom 2 – Deteksi
     with col2:
         st.markdown("""
             <div class="section-title">🌻 DETEKSI OBJEK 🌻</div>
@@ -250,7 +248,7 @@ def halaman_main():
                                     🎯 <b>Akurasi:</b> {acc:.2f}%</div>
                                 """, unsafe_allow_html=True)
 
-                            # ===== Tambahan Bar Chart Akurasi di kiri =====
+                            # ===== Chart hijau di kiri =====
                             st.markdown('<div class="section-title">🎯 Perbandingan Akurasi per Kelas</div>', unsafe_allow_html=True)
                             df_acc = pd.DataFrame(detected_objects, columns=["Deteksi", "Klasifikasi", "Akurasi"])
                             df_acc["Benar (%)"] = df_acc["Akurasi"]
@@ -258,32 +256,24 @@ def halaman_main():
                             df_melt = df_acc.melt(id_vars=["Klasifikasi"], 
                                                   value_vars=["Benar (%)", "Salah (%)"], 
                                                   var_name="Kategori", value_name="Persentase")
-                            
                             col_chart, col_space = st.columns([1,2])
                             with col_chart:
-                                fig_acc = px.bar(df_melt, x="Klasifikasi", y="Persentase", color="Kategori",
-                                                 barmode="group", text="Persentase")
+                                fig_acc = px.bar(df_melt, x="Klasifikasi", y="Persentase", 
+                                                 color_discrete_sequence=['#2ecc71'], text="Persentase")
                                 fig_acc.update_layout(
                                     title="Perbandingan Akurasi per Kelas",
                                     title_x=0.0,
-                                    xaxis_title="",
-                                    yaxis_title="Persentase (%)",
-                                    width=450,
-                                    height=350,
+                                    width=450, height=350,
                                     margin=dict(l=30, r=10, t=40, b=30),
                                     plot_bgcolor='rgba(0,0,0,0)',
                                     paper_bgcolor='rgba(0,0,0,0)',
                                     font=dict(color="#eaf4e2", size=12),
-                                    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5, bgcolor='rgba(0,0,0,0)')
+                                    showlegend=False
                                 )
+                                fig_acc.update_xaxes(showgrid=False, zeroline=False)
+                                fig_acc.update_yaxes(showgrid=False, zeroline=False)
                                 fig_acc.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
                                 st.plotly_chart(fig_acc, use_container_width=False)
-
-                except Exception as e:
-                    st.error(f"❌ Terjadi kesalahan saat memproses gambar: {str(e)}. "
-                             "Pastikan file adalah gambar yang valid (JPG/PNG) dan coba lagi.")
-            else:
-                st.info("Silakan unggah gambar untuk deteksi di atas.")
 
         # ====== KLASIFIKASI MODE ======
         elif mode == "Klasifikasi Gambar":
@@ -307,25 +297,28 @@ def halaman_main():
                         🎯 <b>Akurasi:</b> {acc:.2f}%</div>
                     """, unsafe_allow_html=True)
 
-                    # ===== Bar Chart Akurasi di kiri =====
-                    col_chart, col_space = st.columns([1, 2])
+                    # ===== Chart hijau di kiri =====
+                    st.markdown('<div class="section-title">🎯 Perbandingan Akurasi</div>', unsafe_allow_html=True)
+                    df_single = pd.DataFrame({
+                        "Kategori": ["Benar", "Salah"],
+                        "Persentase": [acc, 100 - acc]
+                    })
+                    col_chart, col_space = st.columns([1,2])
                     with col_chart:
-                        df_single = pd.DataFrame({
-                            "Kategori": ["Benar", "Salah"],
-                            "Persentase": [acc, 100 - acc]
-                        })
-                        fig_single = px.bar(df_single, x="Kategori", y="Persentase", color="Kategori", text="Persentase")
+                        fig_single = px.bar(df_single, x="Kategori", y="Persentase", 
+                                            color_discrete_sequence=['#2ecc71'], text="Persentase")
                         fig_single.update_layout(
                             title=f"Akurasi {class_name}",
                             title_x=0.0,
-                            width=450,
-                            height=350,
+                            width=450, height=350,
                             margin=dict(l=30, r=10, t=40, b=30),
                             plot_bgcolor='rgba(0,0,0,0)',
                             paper_bgcolor='rgba(0,0,0,0)',
                             font=dict(color="#eaf4e2", size=12),
-                            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5, bgcolor='rgba(0,0,0,0)')
+                            showlegend=False
                         )
+                        fig_single.update_xaxes(showgrid=False, zeroline=False)
+                        fig_single.update_yaxes(showgrid=False, zeroline=False)
                         fig_single.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
                         st.plotly_chart(fig_single, use_container_width=False)
 
