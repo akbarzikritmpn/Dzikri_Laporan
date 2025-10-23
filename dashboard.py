@@ -37,32 +37,27 @@ st.markdown("""
     max-width: 100% !important;
 }
 
-/* ===== Animasi Muncul ===== */
 @keyframes fadeSlideIn {
     0% { opacity: 0; transform: translateY(20px); }
     100% { opacity: 1; transform: translateY(0); }
 }
 
-/* ===== Efek umum untuk semua kotak ===== */
 .main-title, .section-title, .detect-result, .explain-box {
     transition: all 0.3s ease-in-out;
     transform: scale(1);
     animation: fadeSlideIn 0.8s ease forwards;
 }
 
-/* Efek hover: sedikit membesar dan bayangan muncul */
 .main-title:hover, .section-title:hover, .detect-result:hover, .explain-box:hover {
     transform: scale(1.03);
     box-shadow: 6px 6px 15px rgba(0,0,0,0.25);
 }
 
-/* Efek ketika ditekan (klik) — sedikit mengecil */
 .main-title:active, .section-title:active, .detect-result:active, .explain-box:active {
     transform: scale(0.97);
     box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
 }
 
-/* ===== Style Asli ===== */
 .main-title {
     background: linear-gradient(145deg, #6b9474, #547a64);
     border: 3px solid #c9e7c0;
@@ -113,7 +108,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ====== Session state ======
+# ====== Session State ======
 if 'page' not in st.session_state:
     st.session_state['page'] = 'home'
 
@@ -255,7 +250,7 @@ def halaman_main():
                                     🎯 <b>Akurasi:</b> {acc:.2f}%</div>
                                 """, unsafe_allow_html=True)
 
-                            # ===== Tambahan Bar Chart Akurasi (Benar vs Salah) =====
+                            # ===== Tambahan Bar Chart Akurasi di kiri =====
                             st.markdown('<div class="section-title">🎯 Perbandingan Akurasi per Kelas</div>', unsafe_allow_html=True)
                             df_acc = pd.DataFrame(detected_objects, columns=["Deteksi", "Klasifikasi", "Akurasi"])
                             df_acc["Benar (%)"] = df_acc["Akurasi"]
@@ -263,11 +258,26 @@ def halaman_main():
                             df_melt = df_acc.melt(id_vars=["Klasifikasi"], 
                                                   value_vars=["Benar (%)", "Salah (%)"], 
                                                   var_name="Kategori", value_name="Persentase")
-                            fig_acc = px.bar(df_melt, x="Klasifikasi", y="Persentase", color="Kategori",
-                                             barmode="group", text="Persentase",
-                                             title="Perbandingan Akurasi (Benar vs Salah) per Kelas")
-                            fig_acc.update_layout(title_x=0.5, xaxis_title="Kelas", yaxis_title="Persentase (%)")
-                            st.plotly_chart(fig_acc, use_container_width=True)
+                            
+                            col_chart, col_space = st.columns([1,2])
+                            with col_chart:
+                                fig_acc = px.bar(df_melt, x="Klasifikasi", y="Persentase", color="Kategori",
+                                                 barmode="group", text="Persentase")
+                                fig_acc.update_layout(
+                                    title="Perbandingan Akurasi per Kelas",
+                                    title_x=0.0,
+                                    xaxis_title="",
+                                    yaxis_title="Persentase (%)",
+                                    width=450,
+                                    height=350,
+                                    margin=dict(l=30, r=10, t=40, b=30),
+                                    plot_bgcolor='rgba(0,0,0,0)',
+                                    paper_bgcolor='rgba(0,0,0,0)',
+                                    font=dict(color="#eaf4e2", size=12),
+                                    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5, bgcolor='rgba(0,0,0,0)')
+                                )
+                                fig_acc.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
+                                st.plotly_chart(fig_acc, use_container_width=False)
 
                 except Exception as e:
                     st.error(f"❌ Terjadi kesalahan saat memproses gambar: {str(e)}. "
@@ -297,16 +307,27 @@ def halaman_main():
                         🎯 <b>Akurasi:</b> {acc:.2f}%</div>
                     """, unsafe_allow_html=True)
 
-                    # ===== Bar Chart Akurasi (Benar vs Salah) =====
-                    st.markdown('<div class="section-title">🎯 Perbandingan Akurasi</div>', unsafe_allow_html=True)
-                    df_single = pd.DataFrame({
-                        "Kategori": ["Benar", "Salah"],
-                        "Persentase": [acc, 100 - acc]
-                    })
-                    fig_single = px.bar(df_single, x="Kategori", y="Persentase", color="Kategori", 
-                                        text="Persentase", title=f"Akurasi untuk {class_name}")
-                    fig_single.update_layout(title_x=0.5, yaxis_title="Persentase (%)")
-                    st.plotly_chart(fig_single, use_container_width=True)
+                    # ===== Bar Chart Akurasi di kiri =====
+                    col_chart, col_space = st.columns([1, 2])
+                    with col_chart:
+                        df_single = pd.DataFrame({
+                            "Kategori": ["Benar", "Salah"],
+                            "Persentase": [acc, 100 - acc]
+                        })
+                        fig_single = px.bar(df_single, x="Kategori", y="Persentase", color="Kategori", text="Persentase")
+                        fig_single.update_layout(
+                            title=f"Akurasi {class_name}",
+                            title_x=0.0,
+                            width=450,
+                            height=350,
+                            margin=dict(l=30, r=10, t=40, b=30),
+                            plot_bgcolor='rgba(0,0,0,0)',
+                            paper_bgcolor='rgba(0,0,0,0)',
+                            font=dict(color="#eaf4e2", size=12),
+                            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5, bgcolor='rgba(0,0,0,0)')
+                        )
+                        fig_single.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
+                        st.plotly_chart(fig_single, use_container_width=False)
 
                 except Exception as e:
                     st.error(f"❌ Gagal memproses gambar: {str(e)}. Pastikan gambar valid dan coba lagi.")
