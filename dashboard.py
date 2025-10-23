@@ -285,31 +285,32 @@ def halaman_main():
                 except Exception as e:
                     st.error(f"❌ Gagal memproses gambar: {str(e)}")
 
-    # ====== PIE CHART AKURASI ======
-    if uploaded_img is not None:
-        if mode == "Klasifikasi Gambar":
-            acc_value = acc
-        elif mode == "Deteksi Objek (YOLO)" and len(detected_objects)>0:
-            acc_value = np.mean([obj[2] for obj in detected_objects])
-        else:
-            acc_value = None
+        # ====== PIE CHART DI KOLOM KEDUA ======
+        if uploaded_img is not None:
+            if mode == "Klasifikasi Gambar":
+                acc_value = acc
+            elif mode == "Deteksi Objek (YOLO)" and len(detected_objects)>0:
+                acc_value = np.mean([obj[2] for obj in detected_objects])
+            else:
+                acc_value = None
 
-        if acc_value is not None:
-            benar = acc_value
-            salah = 100 - acc_value
-            pie_data = pd.DataFrame({"Hasil":["Benar","Salah"], "Persentase":[benar,salah]})
-            fig = px.pie(pie_data, values='Persentase', names='Hasil',
-                         color='Hasil', color_discrete_map={'Benar':'green','Salah':'red'},
-                         hole=0.3)
-            fig.update_traces(textinfo='label+percent+value', marker=dict(line=dict(color='rgba(0,0,0,0)')))
-            fig.update_layout(width=250, height=250, margin=dict(l=0,r=0,t=0,b=0),
-                              paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
-            st.markdown('<div class="section-title">📊 Persen Akurasi</div>', unsafe_allow_html=True)
-            st.plotly_chart(fig, use_container_width=False)
+            if acc_value is not None:
+                benar = acc_value
+                salah = 100 - acc_value
+                pie_data = pd.DataFrame({"Hasil":["Benar","Salah"], "Persentase":[benar,salah]})
+                fig = px.pie(pie_data, values='Persentase', names='Hasil',
+                             color='Hasil', color_discrete_map={'Benar':'green','Salah':'red'},
+                             hole=0.3)
+                fig.update_traces(textinfo='label+percent+value', marker=dict(line=dict(color='rgba(0,0,0,0)')))
+                fig.update_layout(width=250, height=250, margin=dict(l=0,r=0,t=0,b=0),
+                                  paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
+                st.markdown('<div class="section-title">📊 Persen Akurasi</div>', unsafe_allow_html=True)
+                st.plotly_chart(fig, use_container_width=False)
 
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("⬅️ Kembali ke Halaman Awal"):
         st.session_state['page'] = 'home'
+
 
 # ====== Routing Halaman ======
 if st.session_state['page'] == 'home':
