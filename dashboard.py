@@ -307,9 +307,9 @@ def halaman_main():
 
                 # Judul kecil hitam di atas pie chart
                 st.markdown('<p style="text-align:center; color:black; font-size:14px; font-weight:500;">Persen Akurasi</p>', unsafe_allow_html=True)
+                # Pie chart di tengah
                 st.markdown('<div style="display:flex; justify-content:center;">', unsafe_allow_html=True)
-                # Pie chart di tengah kolom
-                st.plotly_chart(fig, use_container_width=False, config={'displayModeBar': False})
+                st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
                 st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
