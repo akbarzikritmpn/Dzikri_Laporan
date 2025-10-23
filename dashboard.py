@@ -5,6 +5,8 @@ from tensorflow.keras.preprocessing import image
 import numpy as np
 from PIL import Image
 import cv2
+import pandas as pd
+import plotly.express as px  # tambahan untuk pie chart
 
 # ====== Load Model ======
 @st.cache_resource
@@ -285,6 +287,29 @@ def halaman_main():
                     st.error(f"❌ Gagal memproses gambar: {str(e)}. Pastikan gambar valid dan coba lagi.")
             else:
                 st.info("Silakan unggah gambar untuk klasifikasi di atas.")
+
+    # ====== PIE CHART BENAR & SALAH ======
+    if 'last_acc' not in st.session_state:
+        st.session_state['last_acc'] = None
+
+    # Simpan akurasi terakhir untuk pie chart
+    if mode == "Klasifikasi Gambar" and uploaded_class is not None:
+        st.session_state['last_acc'] = acc
+    elif mode == "Deteksi Objek (YOLO)" and uploaded_yolo is not None and len(detected_objects) > 0:
+        st.session_state['last_acc'] = np.mean([obj[2] for obj in detected_objects])
+
+    if st.session_state['last_acc'] is not None:
+        benar = st.session_state['last_acc']
+        salah = 100 - benar
+        pie_data = pd.DataFrame({
+            "Hasil": ["Benar", "Salah"],
+            "Persentase": [benar, salah]
+        })
+        fig = px.pie(pie_data, values='Persentase', names='Hasil',
+                     color='Hasil', color_discrete_map={'Benar':'green','Salah':'red'},
+                     hole=0.3)
+        fig.update_traces(textinfo='label+percent+value')
+        st.plotly_chart(fig, use_container_width=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("⬅️ Kembali ke Halaman Awal"):
