@@ -5,6 +5,7 @@ from tensorflow.keras.preprocessing import image
 import numpy as np
 from PIL import Image
 import cv2
+import matplotlib.pyplot as plt
 
 # ====== Load Model ======
 @st.cache_resource
@@ -115,6 +116,10 @@ st.markdown("""
 if 'page' not in st.session_state:
     st.session_state['page'] = 'home'
 
+# Simpan jumlah prediksi per kelas
+if 'count_per_class' not in st.session_state:
+    st.session_state['count_per_class'] = {f"Kelas {i}": 0 for i in range(1, 6)}
+
 # ====== HALAMAN AWAL ======
 def halaman_awal():
     st.set_page_config(page_title="Dashboard Akbar Dzikri", layout="wide")
@@ -168,7 +173,6 @@ def halaman_awal():
     st.write("")
     if st.button("HALAMAN BERIKUTNYA →"):
         st.session_state['page'] = 'main'
-
 
 # ====== HALAMAN UTAMA ======
 def halaman_main():
@@ -253,6 +257,12 @@ def halaman_main():
                                     📊 <b>Klasifikasi:</b> {cls}<br>
                                     🎯 <b>Akurasi:</b> {acc:.2f}%</div>
                                 """, unsafe_allow_html=True)
+                                
+                            # Tambahkan perhitungan kelas ke chart
+                            for det, cls, acc in detected_objects:
+                                for i in range(1, 6):
+                                    if f"Kelas {i}" in cls:
+                                        st.session_state['count_per_class'][f"Kelas {i}"] += 1
 
                 except Exception as e:
                     st.error(f"❌ Terjadi kesalahan saat memproses gambar: {str(e)}. "
@@ -281,10 +291,26 @@ def halaman_main():
                         📊 <b>Hasil Prediksi:</b> {class_name}<br>
                         🎯 <b>Akurasi:</b> {acc:.2f}%</div>
                     """, unsafe_allow_html=True)
+                    
+                    # Tambahkan perhitungan kelas
+                    st.session_state['count_per_class'][f"Kelas {idx+1}"] += 1
+
                 except Exception as e:
                     st.error(f"❌ Gagal memproses gambar: {str(e)}. Pastikan gambar valid dan coba lagi.")
             else:
                 st.info("Silakan unggah gambar untuk klasifikasi di atas.")
+
+    # ====== BAR CHART PER KELAS ======
+    st.markdown("<br><div class='section-title'>📊 Distribusi Prediksi per Kelas</div>", unsafe_allow_html=True)
+    classes = list(st.session_state['count_per_class'].keys())
+    counts = list(st.session_state['count_per_class'].values())
+
+    fig, ax = plt.subplots()
+    ax.bar(classes, counts, color="#6b9474", edgecolor="#c9e7c0")
+    ax.set_xlabel("Kelas", fontsize=12)
+    ax.set_ylabel("Jumlah Prediksi", fontsize=12)
+    ax.set_title("Distribusi Prediksi per Kelas", fontsize=14)
+    st.pyplot(fig)
 
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("⬅️ Kembali ke Halaman Awal"):
