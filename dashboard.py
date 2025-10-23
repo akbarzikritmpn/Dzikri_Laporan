@@ -5,6 +5,8 @@ from tensorflow.keras.preprocessing import image
 import numpy as np
 from PIL import Image
 import cv2
+import plotly.express as px
+import pandas as pd
 
 # ====== Load Model ======
 @st.cache_resource
@@ -169,7 +171,6 @@ def halaman_awal():
     if st.button("HALAMAN BERIKUTNYA →"):
         st.session_state['page'] = 'main'
 
-
 # ====== HALAMAN UTAMA ======
 def halaman_main():
     st.markdown('<div class="main-title">🧠 Deteksi dan Klasifikasi Gambar</div>', unsafe_allow_html=True)
@@ -254,6 +255,20 @@ def halaman_main():
                                     🎯 <b>Akurasi:</b> {acc:.2f}%</div>
                                 """, unsafe_allow_html=True)
 
+                            # ===== Tambahan Bar Chart Akurasi (Benar vs Salah) =====
+                            st.markdown('<div class="section-title">🎯 Perbandingan Akurasi per Kelas</div>', unsafe_allow_html=True)
+                            df_acc = pd.DataFrame(detected_objects, columns=["Deteksi", "Klasifikasi", "Akurasi"])
+                            df_acc["Benar (%)"] = df_acc["Akurasi"]
+                            df_acc["Salah (%)"] = 100 - df_acc["Akurasi"]
+                            df_melt = df_acc.melt(id_vars=["Klasifikasi"], 
+                                                  value_vars=["Benar (%)", "Salah (%)"], 
+                                                  var_name="Kategori", value_name="Persentase")
+                            fig_acc = px.bar(df_melt, x="Klasifikasi", y="Persentase", color="Kategori",
+                                             barmode="group", text="Persentase",
+                                             title="Perbandingan Akurasi (Benar vs Salah) per Kelas")
+                            fig_acc.update_layout(title_x=0.5, xaxis_title="Kelas", yaxis_title="Persentase (%)")
+                            st.plotly_chart(fig_acc, use_container_width=True)
+
                 except Exception as e:
                     st.error(f"❌ Terjadi kesalahan saat memproses gambar: {str(e)}. "
                              "Pastikan file adalah gambar yang valid (JPG/PNG) dan coba lagi.")
@@ -281,6 +296,18 @@ def halaman_main():
                         📊 <b>Hasil Prediksi:</b> {class_name}<br>
                         🎯 <b>Akurasi:</b> {acc:.2f}%</div>
                     """, unsafe_allow_html=True)
+
+                    # ===== Bar Chart Akurasi (Benar vs Salah) =====
+                    st.markdown('<div class="section-title">🎯 Perbandingan Akurasi</div>', unsafe_allow_html=True)
+                    df_single = pd.DataFrame({
+                        "Kategori": ["Benar", "Salah"],
+                        "Persentase": [acc, 100 - acc]
+                    })
+                    fig_single = px.bar(df_single, x="Kategori", y="Persentase", color="Kategori", 
+                                        text="Persentase", title=f"Akurasi untuk {class_name}")
+                    fig_single.update_layout(title_x=0.5, yaxis_title="Persentase (%)")
+                    st.plotly_chart(fig_single, use_container_width=True)
+
                 except Exception as e:
                     st.error(f"❌ Gagal memproses gambar: {str(e)}. Pastikan gambar valid dan coba lagi.")
             else:
