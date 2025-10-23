@@ -16,7 +16,7 @@ def load_models():
 
 yolo_model, classifier = load_models()
 
-# ====== CSS ======
+# ====== CSS dengan Animasi ======
 st.markdown("""
 <style>
 [data-testid="stAppViewContainer"] {
@@ -27,6 +27,7 @@ st.markdown("""
     margin: 0;
 }
 [data-testid="stHeader"], [data-testid="stToolbar"] { display: none; }
+
 .block-container {
     padding-top: 0rem !important;
     padding-bottom: 0rem !important;
@@ -34,23 +35,28 @@ st.markdown("""
     padding-right: 2rem !important;
     max-width: 100% !important;
 }
+
 @keyframes fadeSlideIn {
     0% { opacity: 0; transform: translateY(20px); }
     100% { opacity: 1; transform: translateY(0); }
 }
+
 .main-title, .section-title, .detect-result, .explain-box {
     transition: all 0.3s ease-in-out;
     transform: scale(1);
     animation: fadeSlideIn 0.8s ease forwards;
 }
+
 .main-title:hover, .section-title:hover, .detect-result:hover, .explain-box:hover {
     transform: scale(1.03);
     box-shadow: 6px 6px 15px rgba(0,0,0,0.25);
 }
+
 .main-title:active, .section-title:active, .detect-result:active, .explain-box:active {
     transform: scale(0.97);
     box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
 }
+
 .main-title {
     background: linear-gradient(145deg, #6b9474, #547a64);
     border: 3px solid #c9e7c0;
@@ -64,6 +70,7 @@ st.markdown("""
     box-shadow: 4px 4px 8px rgba(0,0,0,0.25);
     width: 100%;
 }
+
 .section-title {
     font-size: 22px;
     font-weight: bold;
@@ -75,6 +82,7 @@ st.markdown("""
     text-align: center;
     border: 2px solid #c9e7c0;
 }
+
 .detect-result {
     background: #6f9b7c;
     border: 2px solid #c9e7c0;
@@ -85,6 +93,7 @@ st.markdown("""
     font-weight: bold;
     text-align: center;
 }
+
 .explain-box {
     background: #7ba883;
     border: 2px solid #c9e7c0;
@@ -157,6 +166,7 @@ def halaman_awal():
     if st.button("HALAMAN BERIKUTNYA →"):
         st.session_state['page'] = 'main'
 
+
 # ====== HALAMAN UTAMA ======
 def halaman_main():
     st.markdown('<div class="main-title">🧠 Deteksi dan Klasifikasi Gambar</div>', unsafe_allow_html=True)
@@ -180,23 +190,26 @@ def halaman_main():
             </div>
             """, unsafe_allow_html=True)
 
-        # ==== BAR CHART KECIL DI KIRI BAWAH ====
-        st.markdown("<br><div class='section-title'>📊 Jumlah Data per Kelas</div>", unsafe_allow_html=True)
+        # ===== Tambahkan Bar Chart kecil di bawah penjelasan =====
+        st.markdown("<div style='margin-top:15px;'></div>", unsafe_allow_html=True)
+        st.markdown("<div class='section-title'>📊 Distribusi Kelas</div>", unsafe_allow_html=True)
+
         classes = list(st.session_state['count_per_class'].keys())
         counts = list(st.session_state['count_per_class'].values())
 
-        fig, ax = plt.subplots(figsize=(3, 2))  # kecil
+        fig, ax = plt.subplots(figsize=(3, 2))
         ax.bar(classes, counts, color="#6b9474", edgecolor="#c9e7c0")
         ax.set_xlabel("Kelas", fontsize=8)
         ax.set_ylabel("Jumlah", fontsize=8)
-        ax.set_title("Data per Kelas", fontsize=9)
-        plt.xticks(rotation=30, fontsize=7)
+        ax.set_title("Jumlah Prediksi Tiap Kelas", fontsize=9)
+        plt.xticks(rotation=25, fontsize=7)
         plt.yticks(fontsize=7)
         st.pyplot(fig)
 
     with col2:
         st.markdown('<div class="section-title">📤 Upload Gambar</div>', unsafe_allow_html=True)
-        # Mode YOLO
+
+        # ====== YOLO MODE ======
         if mode == "Deteksi Objek (YOLO)":
             uploaded_yolo = st.file_uploader("Unggah gambar untuk Deteksi Objek 👇", type=["jpg", "jpeg", "png"], key="yolo")
             if uploaded_yolo is not None:
@@ -204,7 +217,7 @@ def halaman_main():
                     img = Image.open(uploaded_yolo).convert("RGB")
                     img_array = np.array(img)
                     if img_array.size == 0:
-                        st.error("❌ Gambar tidak valid atau kosong.")
+                        st.error("❌ Gambar tidak valid atau kosong. Silakan unggah gambar lain.")
                     else:
                         results = yolo_model(img_array)
                         img_with_boxes = img_array.copy()
@@ -232,16 +245,36 @@ def halaman_main():
                                         (xmin, max(ymin - 10, 20)),
                                         cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,255,0), 2, cv2.LINE_AA)
                             detected_objects.append((yolo_label, class_name, acc))
-                        st.image(img_with_boxes, caption="📦 Hasil Deteksi", use_container_width=True)
 
-                        for det, cls, acc in detected_objects:
+                            # Update bar chart counter
                             for i in range(1, 6):
-                                if f"Kelas {i}" in cls:
+                                if f"Kelas {i}" in class_name:
                                     st.session_state['count_per_class'][f"Kelas {i}"] += 1
-                except Exception as e:
-                    st.error(f"❌ Error: {str(e)}")
 
-        # Mode Klasifikasi
+                        col_yolo1, col_yolo2 = st.columns([1, 1], gap="large")
+                        with col_yolo1:
+                            st.image(img, caption="🖼️ Gambar Asli", use_container_width=True)
+                        with col_yolo2:
+                            st.image(img_with_boxes, caption="📦 Hasil Deteksi & Klasifikasi", use_container_width=True)
+
+                        if len(detected_objects) == 0:
+                            st.warning("⚠️ Tidak ada objek terdeteksi dalam gambar ini.")
+                        else:
+                            st.markdown('<div class="detect-result">✅ <b>Hasil Deteksi dan Klasifikasi:</b></div>', unsafe_allow_html=True)
+                            for i, (det, cls, acc) in enumerate(detected_objects):
+                                st.markdown(f"""
+                                <div class="detect-result">
+                                    🌼 <b>Objek {i+1}</b><br>
+                                    🔍 <b>Deteksi:</b> {det}<br>
+                                    📊 <b>Klasifikasi:</b> {cls}<br>
+                                    🎯 <b>Akurasi:</b> {acc:.2f}%</div>
+                                """, unsafe_allow_html=True)
+                except Exception as e:
+                    st.error(f"❌ Terjadi kesalahan saat memproses gambar: {str(e)}.")
+            else:
+                st.info("Silakan unggah gambar untuk deteksi di atas.")
+
+        # ====== KLASIFIKASI MODE ======
         elif mode == "Klasifikasi Gambar":
             uploaded_class = st.file_uploader("Unggah gambar untuk Klasifikasi 👇", type=["jpg", "jpeg", "png"], key="classify")
             if uploaded_class is not None:
@@ -264,12 +297,16 @@ def halaman_main():
                     """, unsafe_allow_html=True)
                     st.session_state['count_per_class'][f"Kelas {idx+1}"] += 1
                 except Exception as e:
-                    st.error(f"❌ Error: {str(e)}")
+                    st.error(f"❌ Gagal memproses gambar: {str(e)}.")
+            else:
+                st.info("Silakan unggah gambar untuk klasifikasi di atas.")
 
+    st.markdown("<br>", unsafe_allow_html=True)
     if st.button("⬅️ Kembali ke Halaman Awal"):
         st.session_state['page'] = 'home'
 
-# ====== Routing ======
+
+# ====== Routing Halaman ======
 if st.session_state['page'] == 'home':
     halaman_awal()
 elif st.session_state['page'] == 'main':
