@@ -198,21 +198,23 @@ def halaman_main():
     with col2:
         st.markdown('<div class="section-title">📤 Upload Gambar</div>', unsafe_allow_html=True)
 
+        uploaded_img = None
+        detected_objects = []
+
         # ====== YOLO MODE ======
         if mode == "Deteksi Objek (YOLO)":
-            uploaded_yolo = st.file_uploader("Unggah gambar untuk Deteksi Objek 👇", type=["jpg", "jpeg", "png"], key="yolo")
-            if uploaded_yolo is not None:
+            uploaded_img = st.file_uploader("Unggah gambar untuk Deteksi Objek 👇", type=["jpg", "jpeg", "png"], key="yolo")
+            if uploaded_img is not None:
                 try:
-                    img = Image.open(uploaded_yolo).convert("RGB")
+                    img = Image.open(uploaded_img).convert("RGB")
                     img_array = np.array(img)
 
                     if img_array.size == 0:
-                        st.error("❌ Gambar tidak valid atau kosong. Silakan unggah gambar lain.")
+                        st.error("❌ Gambar tidak valid atau kosong.")
                     else:
                         results = yolo_model(img_array)
                         img_with_boxes = img_array.copy()
                         class_names = yolo_model.names
-                        detected_objects = []
 
                         for box in results[0].boxes:
                             xmin, ymin, xmax, ymax = map(int, box.xyxy[0])
@@ -237,14 +239,14 @@ def halaman_main():
                                         cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,255,0), 2, cv2.LINE_AA)
                             detected_objects.append((yolo_label, class_name, acc))
 
-                        col_yolo1, col_yolo2 = st.columns([1, 1], gap="large")
+                        col_yolo1, col_yolo2 = st.columns([1,1], gap="large")
                         with col_yolo1:
                             st.image(img, caption="🖼️ Gambar Asli", use_container_width=True)
                         with col_yolo2:
                             st.image(img_with_boxes, caption="📦 Hasil Deteksi & Klasifikasi", use_container_width=True)
 
                         if len(detected_objects) == 0:
-                            st.warning("⚠️ Tidak ada objek terdeteksi dalam gambar ini.")
+                            st.warning("⚠️ Tidak ada objek terdeteksi.")
                         else:
                             st.markdown('<div class="detect-result">✅ <b>Hasil Deteksi dan Klasifikasi:</b></div>', unsafe_allow_html=True)
                             for i, (det, cls, acc) in enumerate(detected_objects):
@@ -257,20 +259,17 @@ def halaman_main():
                                 """, unsafe_allow_html=True)
 
                 except Exception as e:
-                    st.error(f"❌ Terjadi kesalahan saat memproses gambar: {str(e)}. "
-                             "Pastikan file adalah gambar yang valid (JPG/PNG) dan coba lagi.")
-            else:
-                st.info("Silakan unggah gambar untuk deteksi di atas.")
+                    st.error(f"❌ Kesalahan saat memproses gambar: {str(e)}")
 
         # ====== KLASIFIKASI MODE ======
         elif mode == "Klasifikasi Gambar":
-            uploaded_class = st.file_uploader("Unggah gambar untuk Klasifikasi 👇", type=["jpg", "jpeg", "png"], key="classify")
-            if uploaded_class is not None:
+            uploaded_img = st.file_uploader("Unggah gambar untuk Klasifikasi 👇", type=["jpg", "jpeg", "png"], key="classify")
+            if uploaded_img is not None:
                 try:
-                    img = Image.open(uploaded_class).convert("RGB")
-                    img_resized = img.resize((224, 224))
+                    img = Image.open(uploaded_img).convert("RGB")
+                    img_resized = img.resize((224,224))
                     arr = image.img_to_array(img_resized)
-                    arr = np.expand_dims(arr, axis=0) / 255.0
+                    arr = np.expand_dims(arr, axis=0)/255.0
                     pred = classifier.predict(arr)
                     idx = np.argmax(pred)
                     acc = float(np.max(pred)) * 100
@@ -284,42 +283,29 @@ def halaman_main():
                         🎯 <b>Akurasi:</b> {acc:.2f}%</div>
                     """, unsafe_allow_html=True)
                 except Exception as e:
-                    st.error(f"❌ Gagal memproses gambar: {str(e)}. Pastikan gambar valid dan coba lagi.")
-            else:
-                st.info("Silakan unggah gambar untuk klasifikasi di atas.")
+                    st.error(f"❌ Gagal memproses gambar: {str(e)}")
 
-    # ====== PIE CHART BENAR & SALAH ======
-    if 'last_acc' not in st.session_state:
-        st.session_state['last_acc'] = None
+    # ====== PIE CHART AKURASI ======
+    if uploaded_img is not None:
+        if mode == "Klasifikasi Gambar":
+            acc_value = acc
+        elif mode == "Deteksi Objek (YOLO)" and len(detected_objects)>0:
+            acc_value = np.mean([obj[2] for obj in detected_objects])
+        else:
+            acc_value = None
 
-    if mode == "Klasifikasi Gambar" and uploaded_class is not None:
-        st.session_state['last_acc'] = acc
-    elif mode == "Deteksi Objek (YOLO)" and uploaded_yolo is not None and len(detected_objects) > 0:
-        st.session_state['last_acc'] = np.mean([obj[2] for obj in detected_objects])
-
-    if st.session_state['last_acc'] is not None:
-        benar = st.session_state['last_acc']
-        salah = 100 - benar
-        pie_data = pd.DataFrame({
-            "Hasil": ["Benar", "Salah"],
-            "Persentase": [benar, salah]
-        })
-
-        fig = px.pie(pie_data, values='Persentase', names='Hasil',
-                     color='Hasil', color_discrete_map={'Benar':'green','Salah':'red'},
-                     hole=0.3)
-        fig.update_traces(textinfo='label+percent+value', marker=dict(line=dict(color='rgba(0,0,0,0)')))
-        fig.update_layout(
-            width=250, height=250,  # kecilkan ukuran
-            margin=dict(l=0, r=0, t=0, b=0),
-            paper_bgcolor='rgba(0,0,0,0)',  # hapus latar putih
-            plot_bgcolor='rgba(0,0,0,0)',
-        )
-
-        # letakkan di kiri
-        col_pie, _ = st.columns([1,2])
-        with col_pie:
-            st.plotly_chart(fig, use_container_width=True)
+        if acc_value is not None:
+            benar = acc_value
+            salah = 100 - acc_value
+            pie_data = pd.DataFrame({"Hasil":["Benar","Salah"], "Persentase":[benar,salah]})
+            fig = px.pie(pie_data, values='Persentase', names='Hasil',
+                         color='Hasil', color_discrete_map={'Benar':'green','Salah':'red'},
+                         hole=0.3)
+            fig.update_traces(textinfo='label+percent+value', marker=dict(line=dict(color='rgba(0,0,0,0)')))
+            fig.update_layout(width=250, height=250, margin=dict(l=0,r=0,t=0,b=0),
+                              paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
+            st.markdown('<div class="section-title">📊 Persen Akurasi</div>', unsafe_allow_html=True)
+            st.plotly_chart(fig, use_container_width=False)
 
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("⬅️ Kembali ke Halaman Awal"):
