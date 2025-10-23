@@ -285,7 +285,7 @@ def halaman_main():
                 except Exception as e:
                     st.error(f"❌ Gagal memproses gambar: {str(e)}")
 
-        # ====== PIE CHART DI KOLOM KEDUA ======
+        # ====== PIE CHART DI TENGAH KOLOM KEDUA ======
         if uploaded_img is not None:
             if mode == "Klasifikasi Gambar":
                 acc_value = acc
@@ -304,8 +304,11 @@ def halaman_main():
                 fig.update_traces(textinfo='label+percent+value', marker=dict(line=dict(color='rgba(0,0,0,0)')))
                 fig.update_layout(width=250, height=250, margin=dict(l=0,r=0,t=0,b=0),
                                   paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
-                st.markdown('<div class="section-title">📊 Persen Akurasi</div>', unsafe_allow_html=True)
-                st.plotly_chart(fig, use_container_width=False)
+
+                # Judul kecil hitam di atas pie chart
+                st.markdown('<p style="text-align:center; color:black; font-size:14px; font-weight:500;">Persen Akurasi</p>', unsafe_allow_html=True)
+                # Pie chart di tengah kolom
+                st.plotly_chart(fig, use_container_width=False, config={'displayModeBar': False})
 
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("⬅️ Kembali ke Halaman Awal"):
