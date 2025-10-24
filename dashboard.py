@@ -8,7 +8,7 @@ import cv2
 import pandas as pd
 import plotly.express as px  # untuk pie chart
 
-# ====== Load Model ======
+#Load Model
 @st.cache_resource
 def load_models():
     yolo_model = YOLO("model/Muhammad Akbar Dzikri_Laporan 4.pt")
@@ -17,7 +17,7 @@ def load_models():
 
 yolo_model, classifier = load_models()
 
-# ====== CSS dengan Animasi ======
+#CSS dengan Animasi
 st.markdown("""
 <style>
 [data-testid="stAppViewContainer"] {
@@ -113,11 +113,11 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ====== Session state ======
+#Session state
 if 'page' not in st.session_state:
     st.session_state['page'] = 'home'
 
-# ====== HALAMAN AWAL ======
+#HALAMAN AWAL
 def halaman_awal():
     st.set_page_config(page_title="Dashboard Akbar Dzikri", layout="wide")
 
@@ -172,7 +172,7 @@ def halaman_awal():
         st.session_state['page'] = 'main'
 
 
-# ====== HALAMAN UTAMA ======
+#HALAMAN UTAMA
 def halaman_main():
     st.markdown('<div class="main-title">🔎 Deteksi dan Klasifikasi Gambar 🔍 </div>', unsafe_allow_html=True)
     col1, col2 = st.columns(2)
@@ -201,7 +201,7 @@ def halaman_main():
         uploaded_img = None
         detected_objects = []
 
-        # ====== YOLO MODE ======
+        #Deteksi objek
         if mode == "Deteksi Objek (YOLO)":
             uploaded_img = st.file_uploader("Unggah gambar untuk Deteksi Objek 👇", type=["jpg", "jpeg", "png"], key="yolo")
             if uploaded_img is not None:
@@ -261,7 +261,7 @@ def halaman_main():
                 except Exception as e:
                     st.error(f"❌ Kesalahan saat memproses gambar: {str(e)}")
 
-        # ====== KLASIFIKASI MODE ======
+        #Klasifikasi
         elif mode == "Klasifikasi Gambar":
             uploaded_img = st.file_uploader("Unggah gambar untuk Klasifikasi 👇", type=["jpg", "jpeg", "png"], key="classify")
             if uploaded_img is not None:
@@ -285,7 +285,7 @@ def halaman_main():
                 except Exception as e:
                     st.error(f"❌ Gagal memproses gambar: {str(e)}")
 
-        # ====== PIE CHART DI TENGAH KOLOM KEDUA ======
+        #Pie chart
         if uploaded_img is not None:
             if mode == "Klasifikasi Gambar":
                 acc_value = acc
@@ -317,7 +317,7 @@ def halaman_main():
         st.session_state['page'] = 'home'
 
 
-# ====== Routing Halaman ======
+#Routing Halaman
 if st.session_state['page'] == 'home':
     halaman_awal()
 elif st.session_state['page'] == 'main':
