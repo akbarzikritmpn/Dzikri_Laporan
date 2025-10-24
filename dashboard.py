@@ -162,7 +162,7 @@ def halaman_awal():
                 Model akan mencari area-area yang berpotensi mengandung objek bunga dan 
                 menampilkan hasil deteksi dalam bentuk <b>kotak hijau</b> di sekitar objek tersebut.
                 <br><br>
-                Dengan fitur ini, pengguna tidak perlu lagi menandai objek secara manual — 
+                Dengan fitur ini, pengguna tidak perlu lagi menandai objek secara manual -
                 cukup unggah gambar, dan sistem akan secara otomatis melakukan deteksi serta klasifikasi secara bersamaan.
             </div>
         """, unsafe_allow_html=True)
@@ -174,7 +174,7 @@ def halaman_awal():
 
 # ====== HALAMAN UTAMA ======
 def halaman_main():
-    st.markdown('<div class="main-title">🧠 Deteksi dan Klasifikasi Gambar</div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-title">🔎 Deteksi dan Klasifikasi Gambar 🔍 </div>', unsafe_allow_html=True)
     col1, col2 = st.columns(2)
 
     with col1:
